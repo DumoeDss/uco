@@ -1,4 +1,4 @@
-# uco — Unity Co-Pilot CLI
+# uco — Unity Copilot CLI
 
 Drive the Unity Editor from any AI agent. Agents run plain shell commands; uco does the rest.
 
@@ -84,7 +84,7 @@ To let an AI agent (Claude Code by default) drive Unity through uco, install uco
 ```bash
 uco init                            # install the three uco Skills into ./.claude/skills (Claude Code)
 # uco init <dir>                    # target a different working directory
-# uco init --agent codex            # use a different agent's skills folder (.agents/skills)
+# uco init --agent codex            # use a different agent's skills folder (.codex/skills for codex)
 # uco init --agent claude-code,cursor  # install for several agents at once
 # uco init --list                   # see all supported agents (with detection paths)
 ```
@@ -360,7 +360,7 @@ uco setup-skills codex /path/to/UnityProject --dry-run
 uco setup-skills codex /path/to/UnityProject --migrate-legacy
 ```
 
-Codex output follows the Agent Skills convention at `.agents/skills/{uco-setup,unity-cli,unity-editor}`. A managed v1 `unity-copilot` directory is migrated automatically; `--migrate-legacy` additionally removes only recognizable one-tool-per-Skill leaves. User-authored directories and files are preserved. All three entries and the shared runtime are staged and ownership-validated before transactional publication, enabling safe idempotent updates.
+Codex output follows the Agent Skills convention at `.codex/skills/{uco-setup,unity-cli,unity-editor}` (codex; other agents use their own folder). A managed v1 `unity-copilot` directory is migrated automatically; `--migrate-legacy` additionally removes only recognizable one-tool-per-Skill leaves. User-authored directories and files are preserved. All three entries and the shared runtime are staged and ownership-validated before transactional publication, enabling safe idempotent updates.
 
 ## Roadmap
 

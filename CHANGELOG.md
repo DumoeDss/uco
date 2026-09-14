@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.2 - 2026-09-15
+
+- Product naming unified to **Unity Copilot** (no hyphen) across docs and
+  skill templates.
+- Vendored plugin refreshed to **1.0.2**: one menu tree (Tools ▸ Unity
+  Copilot), the "AI Game Developer" leftovers and the dead MCP Inspector
+  item removed.
+- `uco init` interactive agent selection now renders a checkbox list
+  (space toggles, arrows move, enter confirms) on a TTY; non-TTY keeps the
+  numbered answer grammar.
+- Codex skills folder follows the current Codex convention:
+  `.codex/skills` (was `.agents/skills`).
+
 ## 1.0.1 - 2026-09-15
 
 - Vendored plugin refreshed to **1.0.1** — the three framework DLLs
@@ -12,7 +25,7 @@
 
 ## 1.0.0 - 2026-09-14 — first public release
 
-Inaugural public version of **uco** (Unity Co-Pilot CLI); the version
+Inaugural public version of **uco** (Unity Copilot CLI); the version
 counter starts here.
 
 uco drives the Unity Editor from any AI agent or terminal over plain HTTP:

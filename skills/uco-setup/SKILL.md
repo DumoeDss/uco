@@ -1,6 +1,6 @@
 ---
 name: uco-setup
-description: Bootstrap or repair uco integration in a Unity project. Use for Unity Co-Pilot plugin installation or updates, NuGet/config staging, agent Skill generation or migration, project wrapper repair, and bridge readiness failures. Not for routine Editor changes or official Unity lifecycle commands.
+description: Bootstrap or repair uco integration in a Unity project. Use for Unity Copilot plugin installation or updates, NuGet/config staging, agent Skill generation or migration, project wrapper repair, and bridge readiness failures. Not for routine Editor changes or official Unity lifecycle commands.
 ---
 
 # uco setup
@@ -23,7 +23,7 @@ uco install-plugin <project> --dry-run
 uco install <project> --dry-run
 ```
 
-3. Install the Unity Co-Pilot package alone with `install-plugin`, or use `install` when NuGet and configuration staging are also required.
+3. Install the Unity Copilot package alone with `install-plugin`, or use `install` when NuGet and configuration staging are also required.
 4. Open the project and wait for package resolution/compilation.
 5. Require runtime readiness before reading the live catalog:
 

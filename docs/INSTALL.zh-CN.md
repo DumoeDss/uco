@@ -58,7 +58,7 @@ uco --help
 ```bash
 uco init                            # 把三个 uco Skills 装进 ./.claude/skills（Claude Code）
 # uco init <目录>                   # 指定别的工作目录
-# uco init --agent codex            # 用别的助手的 skills 目录（.agents/skills）
+# uco init --agent codex            # 用别的助手的 skills 目录（codex 为 .codex/skills）
 # uco init --agent claude-code,cursor  # 一次给多个助手安装
 # uco init --list                   # 查看所有支持的助手（含检测路径）
 ```

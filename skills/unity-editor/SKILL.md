@@ -1,6 +1,6 @@
 ---
 name: unity-editor
-description: Inspect or change a running Unity Editor through uco tools. Use for scenes, GameObjects, components, assets, scripts, packages, UI, graphics, physics, screenshots, console, profiler, live build jobs, or in-Editor tests. Requires a ready Unity Co-Pilot project bridge.
+description: Inspect or change a running Unity Editor through uco tools. Use for scenes, GameObjects, components, assets, scripts, packages, UI, graphics, physics, screenshots, console, profiler, live build jobs, or in-Editor tests. Requires a ready Unity Copilot project bridge.
 ---
 
 # Running Unity Editor

@@ -202,16 +202,35 @@ async function resolveAgentSelection(
       })),
     );
     try {
-      const result = await promptMultiSelect({
-        message: `Select agents to install uco Skills for (${choices.length} available):`,
-        choices: choices.map((entry) => ({
-          value: entry.agent.id,
-          label: entry.agent.name,
-          preSelected: entry.preSelected,
-          detected: entry.detected && !entry.preSelected,
-        })),
-      });
-      return buildSelection(result.selected, opts, 'prompt');
+      // Checkbox UI (space toggles, arrows move, enter confirms) on a real TTY;
+      // anything that cannot host the interactive renderer (non-TTY stdin,
+      // piped output) falls back to the numbered promptMultiSelect grammar.
+      let selected: string[];
+      try {
+        const { checkbox } = await import('@inquirer/prompts');
+        selected = await checkbox({
+          message: `Select agents to install uco Skills for (${choices.length} available):`,
+          choices: choices.map((entry) => ({
+            value: entry.agent.id,
+            name: entry.agent.name
+              + (entry.detected && !entry.preSelected ? ' (detected)' : ''),
+            checked: entry.preSelected,
+          })),
+        });
+        if (selected.length === 0) throw new EmptyMultiSelectionError('no agents checked');
+      } catch {
+        const result = await promptMultiSelect({
+          message: `Select agents to install uco Skills for (${choices.length} available):`,
+          choices: choices.map((entry) => ({
+            value: entry.agent.id,
+            label: entry.agent.name,
+            preSelected: entry.preSelected,
+            detected: entry.detected && !entry.preSelected,
+          })),
+        });
+        selected = result.selected;
+      }
+      return buildSelection(selected, opts, 'prompt');
     } catch (error) {
       if (error instanceof EmptyMultiSelectionError) {
         throw new CliError('At least one agent must be selected. Re-run `uco init` and choose agents, or pass --agent <ids>.', 'empty-agent-selection');

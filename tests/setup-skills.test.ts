@@ -28,7 +28,7 @@ function temporaryProject(): string {
 
 describe('setup-skills command', () => {
   it('uses the official Codex repository Skill root', () => {
-    expect(getAgentById('codex')?.skillsPath).toBe('.agents/skills');
+    expect(getAgentById('codex')?.skillsPath).toBe('.codex/skills');
   });
 
   it('passes positional project into both the request and transport context', async () => {
@@ -72,7 +72,7 @@ describe('setup-skills command', () => {
     expect(execute.mock.calls[0]?.[0]).toMatchObject({
       agentId: 'codex',
       projectPath: path.resolve(projectPath),
-      skillsPath: '.agents/skills',
+      skillsPath: '.codex/skills',
       dryRun: true,
       migrateLegacy: true,
     });
@@ -80,7 +80,7 @@ describe('setup-skills command', () => {
     const output = JSON.parse(String(stdout.mock.calls[0]?.[0]));
     expect(output).toMatchObject({
       agent: 'codex',
-      skillsPath: '.agents/skills',
+      skillsPath: '.codex/skills',
       skillEntryCount: 3,
       skillIds: ['uco-setup', 'unity-cli', 'unity-editor'],
       warnings: [],
@@ -110,7 +110,7 @@ describe('setup-skills command', () => {
     const result = await executeSetupSkills({
       agentId: 'codex',
       projectPath,
-      skillsPath: '.agents/skills',
+      skillsPath: '.codex/skills',
       dryRun: false,
       migrateLegacy: false,
     }, context);

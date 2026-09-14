@@ -1,3 +1,6 @@
+vi.mock('@inquirer/prompts', () => ({
+  checkbox: async () => { throw new Error('non-TTY'); },
+}));
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';

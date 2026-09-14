@@ -1,7 +1,7 @@
 {
   "name": "@atelierai/uco",
-  "version": "1.0.1",
-  "description": "uco — Unity Co-Pilot CLI. Drive Unity Editor (and runtime game builds) from any AI agent via plain HTTP. No MCP protocol on the wire.",
+  "version": "1.0.2",
+  "description": "uco — Unity Copilot CLI. Drive Unity Editor (and runtime game builds) from any AI agent via plain HTTP. No MCP protocol on the wire.",
   "type": "module",
   "bin": {
     "uco": "./bin/uco.mjs",
@@ -40,6 +40,7 @@
     "LICENSE"
   ],
   "dependencies": {
+    "@inquirer/prompts": "^8.7.2",
     "chalk": "^5.6.2",
     "commander": "^12.1.0",
     "kleur": "^4.1.5",
@@ -51,7 +52,8 @@
     "commander",
     "kleur",
     "ws",
-    "yocto-spinner"
+    "yocto-spinner",
+    "@inquirer/prompts"
   ],
   "devDependencies": {
     "@types/node": "^20.14.0",
@@ -79,5 +81,12 @@
   "bugs": "https://github.com/DumoeDss/uco/issues",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "bundleDependencies": [
+    "chalk",
+    "commander",
+    "kleur",
+    "ws",
+    "yocto-spinner"
+  ]
 }

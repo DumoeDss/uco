@@ -428,7 +428,7 @@ export const agentRegistry: readonly AgentDefinition[] = [
   {
     id: 'codex',
     name: 'Codex',
-    skillsPath: '.agents/skills',
+    skillsPath: '.codex/skills',
     detectionPaths: ['.codex'],
     configPathDisplay: '.codex/config.toml',
     configFormat: 'toml',
