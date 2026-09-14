@@ -51,8 +51,8 @@ function pluginSource(version: string): { source: PluginSource; root: string } {
 /** A minimal fake staged NuGet set: a DLL plus its .meta. */
 function nugetSource(dllContent: string): string {
   const root = temporaryDirectory('uco-unity-refresh-nuget-');
-  fs.writeFileSync(path.join(root, 'Uco.Framework.dll'), dllContent);
-  fs.writeFileSync(path.join(root, 'Uco.Framework.dll.meta'), 'fileFormatVersion: 2\nguid: 1111111111111111111111111111111\n');
+  fs.writeFileSync(path.join(root, 'System.Text.Json.dll'), dllContent);
+  fs.writeFileSync(path.join(root, 'System.Text.Json.dll.meta'), 'fileFormatVersion: 2\nguid: 1111111111111111111111111111111\n');
   return root;
 }
 
@@ -88,7 +88,7 @@ describe('installAll refresh mode', () => {
     });
     expect(result.kind).toBe('success');
     expect(fs.readFileSync(path.join(project, 'Packages', UCO_UNITY_PACKAGE_ID, 'Runtime', 'Plugin.cs'), 'utf8')).toContain('2.0.0');
-    expect(fs.readFileSync(path.join(project, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll'), 'utf8')).toBe('v2-dll');
+    expect(fs.readFileSync(path.join(project, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'utf8')).toBe('v2-dll');
   });
 
   it('keeps the lockfile when the plugin surface is unchanged, deletes it when it changes', async () => {
@@ -134,7 +134,7 @@ describe('installAll refresh mode', () => {
     await callInstallAll({ unityProjectPath: project, pluginSource: source, stagedNugetPath: nuget, skipConfig: true });
 
     // The user's Unity wrote its own .meta with a project-specific GUID.
-    const installedMeta = path.join(project, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll.meta');
+    const installedMeta = path.join(project, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll.meta');
     fs.writeFileSync(installedMeta, 'fileFormatVersion: 2\nguid: deadbeefdeadbeefdeadbeefdeadbeef\n');
 
     const upgraded = nugetSource('v2-dll');
@@ -142,7 +142,7 @@ describe('installAll refresh mode', () => {
       unityProjectPath: project, pluginSource: source, stagedNugetPath: upgraded, refresh: true, skipConfig: true,
     });
     expect(result.kind).toBe('success');
-    expect(fs.readFileSync(path.join(project, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll'), 'utf8')).toBe('v2-dll');
+    expect(fs.readFileSync(path.join(project, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'utf8')).toBe('v2-dll');
     expect(fs.readFileSync(installedMeta, 'utf8')).toContain('deadbeefdeadbeefdeadbeefdeadbeef');
   });
 

@@ -292,7 +292,7 @@ describe('uco update (library)', () => {
     fs.mkdirSync(path.join(fakeBundle, 'plugin'), { recursive: true });
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"1.0.0"}\n');
     fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll'), 'dll-bytes');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'dll-bytes');
     const bundleOpts = {
       pluginSourcePath: path.join(fakeBundle, 'plugin'),
       nugetSourcePath: path.join(fakeBundle, 'nuget'),
@@ -344,7 +344,7 @@ describe('uco update (library)', () => {
     fs.mkdirSync(path.join(fakeBundle, 'plugin'), { recursive: true });
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"1.0.0"}\n');
     fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll'), 'dll-bytes');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'dll-bytes');
     const bundleOpts = {
       pluginSourcePath: path.join(fakeBundle, 'plugin'),
       nugetSourcePath: path.join(fakeBundle, 'nuget'),
@@ -561,7 +561,7 @@ describe('uco update unity surface', () => {
     fs.mkdirSync(path.join(fakeBundle, 'plugin'), { recursive: true });
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"1.0.0"}\n');
     fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll'), 'dll-bytes');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'dll-bytes');
 
     minimalUnityProject(target, UNITY_SOURCE_BUNDLE);
     // Stage the matched set once via update (first run installs from the fake bundle).
@@ -574,7 +574,7 @@ describe('uco update unity surface', () => {
     if (first.kind !== 'success') return;
     expect(first.unity.status).toBe('refreshed');
     expect(fs.existsSync(path.join(target, 'Packages', 'com.atelierai.unity.copilot', 'package.json'))).toBe(true);
-    expect(fs.readFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll'), 'utf8')).toBe('dll-bytes');
+    expect(fs.readFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'utf8')).toBe('dll-bytes');
 
     // Second run: bundle unchanged → unity surface unchanged, lockfile kept.
     fs.writeFileSync(path.join(target, 'Packages', 'packages-lock.json'), '{"locked":true}\n');
@@ -596,15 +596,15 @@ describe('uco update unity surface', () => {
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"2.0.0"}\n');
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'Runtime.cs'), '// v2 runtime\n');
     fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll'), 'v2-dll-bytes');
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll.meta'), 'guid: v2\n');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'v2-dll-bytes');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll.meta'), 'guid: v2\n');
 
     minimalUnityProject(target, UNITY_SOURCE_BUNDLE);
     // Hand-edited drift: plugin at v1 while the DLLs are ancient.
     fs.mkdirSync(path.join(target, 'Packages', 'com.atelierai.unity.copilot'), { recursive: true });
     fs.writeFileSync(path.join(target, 'Packages', 'com.atelierai.unity.copilot', 'package.json'), '{"version":"1.0.0"}\n');
     fs.mkdirSync(path.join(target, 'Assets', 'Plugins', 'NuGet'), { recursive: true });
-    fs.writeFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll'), 'ancient-dll');
+    fs.writeFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'ancient-dll');
     fs.writeFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'packages-lock.json'), '{"stale":true}\n');
     fs.writeFileSync(path.join(target, 'Packages', 'packages-lock.json'), '{"locked":true}\n');
 
@@ -619,10 +619,41 @@ describe('uco update unity surface', () => {
     // Both surfaces now come from the one bundle (matched set).
     expect(fs.readFileSync(path.join(target, 'Packages', 'com.atelierai.unity.copilot', 'package.json'), 'utf8'))
       .toContain('2.0.0');
-    expect(fs.readFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'Uco.Framework.dll'), 'utf8'))
+    expect(fs.readFileSync(path.join(target, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'utf8'))
       .toBe('v2-dll-bytes');
     // Lockfile reset happened because the plugin changed.
     expect(fs.existsSync(path.join(target, 'Packages', 'packages-lock.json'))).toBe(false);
+  });
+
+  it('removes project-level framework DLLs superseded by the package-embedded set', async () => {
+    const target = temporaryTarget();
+    const fakeBundle = temporaryTarget();
+    fs.mkdirSync(path.join(fakeBundle, 'plugin'), { recursive: true });
+    fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"1.0.1"}\n');
+    fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'ext-dll\n');
+
+    minimalUnityProject(target, UNITY_SOURCE_BUNDLE);
+    // Legacy layout: the framework trio still sitting in the project's NuGet dir.
+    const nugetDir = path.join(target, 'Assets', 'Plugins', 'NuGet');
+    fs.mkdirSync(nugetDir, { recursive: true });
+    for (const name of ['ReflectorNet.dll', 'Uco.Framework.dll', 'Uco.Framework.Common.dll']) {
+      fs.writeFileSync(path.join(nugetDir, name), 'stale-local-dll');
+      fs.writeFileSync(path.join(nugetDir, name + '.meta'), 'guid: stale\n');
+    }
+
+    const result = await runUpdate({
+      targetPath: target,
+      pluginSourcePath: path.join(fakeBundle, 'plugin'),
+      nugetSourcePath: path.join(fakeBundle, 'nuget'),
+    });
+    expect(result.kind).toBe('success');
+    if (result.kind !== 'success') return;
+    // External DLL staged; the relocated trio is gone from the project level.
+    expect(fs.existsSync(path.join(nugetDir, 'System.Text.Json.dll'))).toBe(true);
+    expect(fs.existsSync(path.join(nugetDir, 'Uco.Framework.dll'))).toBe(false);
+    expect(fs.existsSync(path.join(nugetDir, 'ReflectorNet.dll'))).toBe(false);
+    expect(fs.existsSync(path.join(nugetDir, 'Uco.Framework.Common.dll.meta'))).toBe(false);
   });
 
   it('warns about stale package siblings without deleting them', async () => {
@@ -631,7 +662,7 @@ describe('uco update unity surface', () => {
     fs.mkdirSync(path.join(fakeBundle, 'plugin'), { recursive: true });
     fs.writeFileSync(path.join(fakeBundle, 'plugin', 'package.json'), '{"version":"1.0.0"}\n');
     fs.mkdirSync(path.join(fakeBundle, 'nuget'), { recursive: true });
-    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'Uco.Framework.dll'), 'dll-bytes');
+    fs.writeFileSync(path.join(fakeBundle, 'nuget', 'System.Text.Json.dll'), 'dll-bytes');
 
     minimalUnityProject(target, UNITY_SOURCE_BUNDLE);
     fs.mkdirSync(path.join(target, 'Packages', 'com.atelierai.unity.copilot.backup-097'), { recursive: true });

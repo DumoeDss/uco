@@ -1,6 +1,6 @@
 {
   "name": "@atelierai/uco",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "uco — Unity Co-Pilot CLI. Drive Unity Editor (and runtime game builds) from any AI agent via plain HTTP. No MCP protocol on the wire.",
   "type": "module",
   "bin": {

@@ -439,7 +439,17 @@ function stageNugetWithMetaPreservation(src: string, dst: string): void {
  * references — delete them (with their .meta) after staging the new set.
  */
 function removeRenamedFrameworkDlls(nugetDir: string): void {
-  const legacy = ['McpPlugin.dll', 'McpPlugin.Common.dll'];
+  // McpPlugin*: the pre-rename DLL names. The three current framework DLLs
+  // (ReflectorNet/Uco.Framework/Uco.Framework.Common) moved INTO the plugin
+  // package (Plugins/) as of 1.0.1 — project-level copies would collide with
+  // the embedded assemblies, so they are removed on every install.
+  const legacy = [
+    'McpPlugin.dll',
+    'McpPlugin.Common.dll',
+    'ReflectorNet.dll',
+    'Uco.Framework.dll',
+    'Uco.Framework.Common.dll',
+  ];
   for (const name of legacy) {
     for (const suffix of ['', '.meta']) {
       const p = path.join(nugetDir, name + suffix);
