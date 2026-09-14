@@ -1,0 +1,7 @@
+interface:
+  display_name: "uco Setup"
+  short_description: "Bootstrap and repair uco Unity project integration"
+  default_prompt: "Use $uco-setup to initialize or repair uco for this Unity project."
+
+policy:
+  allow_implicit_invocation: true

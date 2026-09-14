@@ -1,0 +1,7 @@
+interface:
+  display_name: "Unity Editor"
+  short_description: "Control a running Unity Editor through uco"
+  default_prompt: "Use $unity-editor to inspect or change this running Unity Editor."
+
+policy:
+  allow_implicit_invocation: true

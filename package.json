@@ -1,0 +1,83 @@
+{
+  "name": "@atelierai/uco",
+  "version": "1.0.0",
+  "description": "uco — Unity Co-Pilot CLI. Drive Unity Editor (and runtime game builds) from any AI agent via plain HTTP. No MCP protocol on the wire.",
+  "type": "module",
+  "bin": {
+    "uco": "./bin/uco.mjs",
+    "uco-server": "./bin/server.mjs",
+    "uco-stub-plugin": "./bin/stub-plugin.mjs"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./transport": "./dist/transport/index.js",
+    "./config": "./dist/config/resolve.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "start": "node bin/cocli.mjs",
+    "dev": "tsx src/index.ts",
+    "prepack": "npm run clean && npm run build",
+    "stage-vendor": "node scripts/stage-vendor.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "skills",
+    "vendor",
+    "docs/INSTALL.zh-CN.md",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^12.1.0",
+    "kleur": "^4.1.5",
+    "ws": "^8.18.0",
+    "yocto-spinner": "^1.2.0"
+  },
+  "bundledDependencies": [
+    "chalk",
+    "commander",
+    "kleur",
+    "ws",
+    "yocto-spinner"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/ws": "^8.5.13",
+    "rimraf": "^5.0.5",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.4",
+    "vitest": "^3.1.0"
+  },
+  "keywords": [
+    "unity",
+    "cli",
+    "ai-agent",
+    "claude-code",
+    "unity-mcp",
+    "automation"
+  ],
+  "license": "MIT",
+  "author": "AtelierAI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DumoeDss/uco.git"
+  },
+  "homepage": "https://github.com/DumoeDss/uco#readme",
+  "bugs": "https://github.com/DumoeDss/uco/issues",
+  "publishConfig": {
+    "access": "public"
+  }
+}

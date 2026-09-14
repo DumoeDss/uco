@@ -1,0 +1,7 @@
+interface:
+  display_name: "Unity CLI"
+  short_description: "Operate the official Unity CLI and batch workflows"
+  default_prompt: "Use $unity-cli to complete this official Unity CLI task."
+
+policy:
+  allow_implicit_invocation: true
