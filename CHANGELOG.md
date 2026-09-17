@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.4 - 2026-09-17
+
+- Server startup banner says "uco bridge" (was "Node MCP Server"); help
+  endpoint header updated to match.
+- Vendored plugin refreshed to **1.0.4**: the in-editor updater now
+  detects embedded installs (uco install) and directs the user to the
+  CLI instead of failing with a UPM error.
+
 ## 1.0.3 - 2026-09-17
 
 - Vendored plugin refreshed to **1.0.3**: the Cloud connection mode is gone

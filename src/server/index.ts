@@ -1,5 +1,5 @@
 /**
- * Node MCP Server — entry point and public exports.
+ * uco bridge — entry point and public exports.
  *
  * Exports createServer(), ServerConfig, and shared types.
  * Also provides a main() function for the `uco serve` subcommand / bin entry.
@@ -65,7 +65,7 @@ export async function main(argv: string[]): Promise<void> {
   const listening = await server.start();
   const displayHost = listening.address.includes(':') ? `[${listening.address}]` : listening.address;
 
-  console.log(`Node MCP Server listening on http://${displayHost}:${listening.port}`);
+  console.log(`uco bridge listening on http://${displayHost}:${listening.port}`);
   console.log(`  API version:  ${config.serverApiVersion}`);
   console.log(`  Server version: ${config.serverVersion}`);
   console.log(`  Auth: ${config.authorization}`);

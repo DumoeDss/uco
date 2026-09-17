@@ -101,7 +101,7 @@ export function createServer(
   const listeningAddress = (): ListeningAddress => {
     const address = httpServer.address();
     if (address === null || typeof address === 'string') {
-      throw new Error('Node MCP Server did not report an IP listening address.');
+      throw new Error('uco bridge did not report an IP listening address.');
     }
     const info = address as AddressInfo;
     return { address: info.address, family: info.family, port: info.port };

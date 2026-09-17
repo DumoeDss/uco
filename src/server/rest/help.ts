@@ -13,7 +13,7 @@ export function handleHelp(req: IncomingMessage, res: ServerResponse): void {
   void req;
 
   const header =
-    'Node MCP Server\n' +
+    'uco bridge\n' +
     '\n' +
     'REST endpoints:\n' +
     '  GET  /api/tools                      — list all available tools\n' +
