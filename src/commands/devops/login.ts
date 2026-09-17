@@ -1,7 +1,7 @@
 // uco login — authenticate with Unity-MCP cloud (ai-game.dev).
 //
 // Only relevant if the user opts into the cloud mode of the upstream
-// Unity-MCP server. For local/custom-host usage, this command is a no-op.
+// uco bridge server. For local/custom-host usage, this command is a no-op.
 
 import { Command } from 'commander';
 import { runCommand, CliError } from '../../util/cli-context.js';

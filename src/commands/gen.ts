@@ -1,4 +1,4 @@
-// uco gen — regenerate the typed command suite from a live Unity-MCP server.
+// uco gen — regenerate the typed command suite from a live uco bridge server.
 //
 // Reads GET /api/tools, writes src/generated/tools.json (the snapshot
 // for offline build) and src/generated/tools.ts (the commander
@@ -21,7 +21,7 @@ interface GenOpts {
 export function registerGen(program: Command): void {
   program
     .command('gen [project]')
-    .description('Regenerate typed tool commands from a live Unity-MCP server (writes src/generated/).')
+    .description('Regenerate typed tool commands from a live uco bridge server (writes src/generated/).')
     .option('--out <dir>', 'Output directory (default: this package\'s src/generated/)')
     .option('--tools <file>', 'Path for the catalog JSON snapshot (default: <out>/tools.json)')
     .action(function (this: Command, _projectArg: string | undefined, opts: GenOpts) {

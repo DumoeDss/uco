@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.3 - 2026-09-17
+
+- Vendored plugin refreshed to **1.0.3**: the Cloud connection mode is gone
+  (single Custom mode, local bridge auto-starts unconditionally), and the
+  bridge discovery now finds the published **@atelierai/uco** npm package
+  (plus legacy `uco`/`cocli` layouts as fallbacks).
+- Help text and skill templates say "uco bridge server" instead of
+  "Unity-MCP server"; the uco-setup recovery skill now documents how to
+  bring the bridge up (`uco open --start-server true`, plugin auto-start,
+  manual spawn with the exact CLI arguments).
+
 ## 1.0.2 - 2026-09-15
 
 - Product naming unified to **Unity Copilot** (no hyphen) across docs and

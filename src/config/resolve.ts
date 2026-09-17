@@ -1,4 +1,4 @@
-// Resolve the (url, token) pair to talk to a Unity-MCP server, given:
+// Resolve the (url, token) pair to talk to the uco bridge, given:
 //   1. Explicit CLI overrides (--url, --token)
 //   2. The Unity project's UserSettings/AI-Game-Developer-Config.json
 //   3. Deterministic-port localhost fallback

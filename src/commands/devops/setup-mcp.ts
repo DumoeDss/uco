@@ -1,6 +1,6 @@
 // uco setup-mcp — write an MCP client config file for a chosen AI agent
 // (claude-code, cursor, codex, ...). Lets a normal MCP client connect to
-// the same Unity-MCP server uco targets, when the user wants to mix
+// the same uco bridge server uco targets, when the user wants to mix
 // both modalities.
 
 import { Command } from 'commander';

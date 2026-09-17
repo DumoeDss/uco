@@ -2,12 +2,36 @@
 
 Read this only after the bootstrap happy path fails.
 
+## Bridge not running (`uco ping` fails / connection refused)
+
+The bridge is a plain Node process (`bin/server.mjs` from the `@atelierai/uco`
+npm package) listening on a per-project deterministic port. Bring it up in any
+of these ways:
+
+- `uco open <project> --start-server true` — the CLI starts a uco-owned bridge
+  before Unity launches.
+- Open the Unity Editor: the plugin auto-starts the bridge in Custom mode when
+  `keepServerRunning` is true (the default) — discovery looks for the
+  `@atelierai/uco` package (project `node_modules` first, then the npm global).
+- Start it manually with the exact same arguments the plugin would use:
+
+  ```bash
+  node <npm-global>/node_modules/@atelierai/uco/bin/server.mjs \
+    --port <port> --authorization required --token <token from UserSettings/uco-config.json>
+  ```
+
+  The plugin detects an already-running server on its port and connects to it.
+
+If the plugin still refuses to start it: `nodeServerPath` in
+`UserSettings/uco-config.json` may point at a dead path (it must exist or be
+cleared), or the npm package is missing (`npm i -g @atelierai/uco`).
+
 ## Diagnose by layer
 
 1. Verify `Packages/manifest.json` contains `com.atelierai.unity.copilot` and inspect its source/version without rewriting unrelated dependencies.
 2. Check the OpenUPM scopes required by the package and preserve an active local package source.
-3. Check that `Assets/Plugins/NuGet` is present when using full `uco install`. (No server directory is staged — the Unity plugin launches its Node server itself.)
-4. Check `UserSettings/AI-Game-Developer-Config.json` exists, but never print its token.
+3. Check `Assets/Plugins/NuGet` is present when using full `uco install`. (No server directory is staged — the Unity plugin launches its Node server itself.)
+4. Check `UserSettings/uco-config.json` exists, but never print its token.
 5. Confirm the expected Unity Editor process owns this exact project before diagnosing REST readiness.
 6. Use `uco status`, then `open` plus `wait-for-ready`; only then run `ping` and `instance-get-current`.
 

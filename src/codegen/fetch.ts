@@ -1,4 +1,4 @@
-// Fetch the tool catalog from a live Unity-MCP server.
+// Fetch the tool catalog from a live uco bridge.
 //
 // Uses uco's own transport so it inherits port resolution, auth, and
 // timeout handling. The catalog is written verbatim to
