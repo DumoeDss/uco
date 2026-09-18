@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.8 - 2026-09-19
+
+- Vendored plugin refreshed to **1.0.6**: the C# source's internal type and
+  directory names complete the legacy-naming scrub (managers, builder,
+  hub interfaces, test names, storage keys). No behavioral change —
+  framework tests 831/831 across TFMs, 2022.3 EditMode gate unchanged.
+- This rename also fixed a live mismatch: the plugin now requests
+  `GetPluginClientData`, which the bridge actually serves (it previously
+  requested a method name the bridge never registered).
+
+
 ## 1.0.7 - 2026-09-19
 
 - **Legacy agent-config writing removed.** uco no longer writes or
