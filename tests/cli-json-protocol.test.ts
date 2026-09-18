@@ -6,6 +6,7 @@
 // are asserted end-to-end, not through mocks.
 
 import * as http from 'node:http';
+import * as net from 'node:net';
 import * as path from 'node:path';
 import { spawn } from 'node:child_process';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -135,13 +136,29 @@ describe('JSON stream purity contract', () => {
     expect((JSON.parse(result.stdout) as { ok: boolean }).ok).toBe(true);
   });
 
-  it('keeps stdout empty for a connection failure and emits one stderr error object', async () => {
+  it('keeps stdout empty for a connection failure and emits one stderr error object', async (ctx) => {
     // Bind an ephemeral port and close it again so the port is genuinely
     // refused (low ports like :1 are rejected by the fetch client itself).
     const probe = http.createServer(() => { /* never serves */ });
     await new Promise<void>((resolve) => probe.listen(0, '127.0.0.1', () => resolve()));
     const deadPort = (probe.address() as { port: number }).port;
     await new Promise<void>((resolve) => probe.close(() => resolve()));
+
+    // A system-level loopback interceptor (proxy TUN hijack / LSP rule for
+    // node.exe) accepts EVERY 127.0.0.1 connection and closes dead ones after
+    // accept — the OS never produces ECONNREFUSED, so the classifier under
+    // test cannot fire and the assertion below is unfalsifiable. Probe with a
+    // raw socket: a genuinely refused port errors; an intercepted one
+    // "connects". Skip only on intercepted machines.
+    const intercepted = await new Promise<boolean>((resolve) => {
+      const socket = net.connect(deadPort, '127.0.0.1');
+      socket.once('error', () => resolve(false));
+      socket.once('connect', () => { socket.destroy(); resolve(true); });
+    });
+    if (intercepted) {
+      ctx.skip('loopback interceptor present: dead 127.0.0.1 ports do not refuse (no ECONNREFUSED possible)');
+      return;
+    }
 
     const result = await runCli(['--json', '--url', `http://127.0.0.1:${deadPort}`, 'ping']);
 
@@ -337,7 +354,7 @@ describe('canonical error envelope — retry continuity normalization', () => {
   it('keeps the envelope uniform across transport and non-retryable failures', () => {
     const transport = serializeError(new TransportError({
       kind: 'timeout',
-      url: 'http://localhost:1/x',
+      url: 'http://127.0.0.1:1/x',
       method: 'POST',
       message: 'Request timed out after 5ms',
     })) as { error: { code: string; message: string; retryable: boolean; requestId?: unknown; details?: { retryWith?: unknown } } };
@@ -353,7 +370,7 @@ describe('canonical error envelope — retry continuity normalization', () => {
   it('marks a transport timeout as result-unknown and points at the call record', () => {
     const withCallId = serializeError(new TransportError({
       kind: 'timeout',
-      url: 'http://localhost:1/api/tools/script-execute',
+      url: 'http://127.0.0.1:1/api/tools/script-execute',
       method: 'POST',
       message: 'Request timed out after 60000ms',
       callId: 'c-ab12cd34',
@@ -367,7 +384,7 @@ describe('canonical error envelope — retry continuity normalization', () => {
 
     const withoutCallId = serializeError(new TransportError({
       kind: 'timeout',
-      url: 'http://localhost:1/api/tools/script-execute',
+      url: 'http://127.0.0.1:1/api/tools/script-execute',
       method: 'POST',
       message: 'Request timed out after 60000ms',
     })) as { error: { message: string } };
@@ -413,7 +430,7 @@ describe('post-call idle wait (COCli-05)', () => {
       void init;
       return new Response(JSON.stringify(editorState), { status: 200 });
     });
-    return new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    return new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
   }
 
   it('returns promptly after one probe when the Editor is already idle', async () => {
@@ -431,7 +448,7 @@ describe('post-call idle wait (COCli-05)', () => {
       calls++;
       return new Response(JSON.stringify(calls < 3 ? compilingEditor : idleEditor), { status: 200 });
     });
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await waitForEditorIdle(transport, { timeoutMs: 5_000, intervalMs: 50 });
     expect(calls).toBeGreaterThanOrEqual(3);

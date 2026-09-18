@@ -206,7 +206,7 @@ export async function installAll(opts: InstallAllOptions): Promise<InstallAllRes
       } else {
         actions.push({
           kind: 'init-config',
-          detail: 'Initialise UserSettings/uco-config.json (host = http://localhost:<hash>, random token, keepServerRunning=true)',
+          detail: 'Initialise UserSettings/uco-config.json (host = http://127.0.0.1:<hash>, random token, keepServerRunning=true)',
           target: configPath,
         });
         if (!dryRun) {
@@ -253,7 +253,9 @@ export async function installAll(opts: InstallAllOptions): Promise<InstallAllRes
  * Whether the plugin surface at the target differs from what the given source
  * would produce: the `Packages/manifest.json` dependency value (including
  * legacy package ids) or — for embed staging — any file of the mirrored
- * package source that is missing or byte-different at the target. Used by
+ * package source that is missing or byte-different at the target, or any
+ * extra file at the target with no counterpart in the source (stale version
+ * leftover; mirrorDirectory prunes those on restage). Used by
  * refresh mode to gate the lockfile reset and to detect hand-edited drift.
  * Exported for `uco update`'s needs-refresh pre-check (matched-set heal).
  */
@@ -285,7 +287,14 @@ export function pluginSurfaceDiffers(projectPath: string, source: PluginSource):
   return false;
 }
 
-/** True when any file under `src` is missing or byte-different under `dst`. */
+/**
+ * True when the trees differ in either direction: a file under `src` that is
+ * missing or byte-different under `dst`, or a file under `dst` with no
+ * counterpart under `src`. The dst-only direction matters as much as the
+ * src-only one: a file deleted upstream (stale version leftover) used to
+ * count as "matching", so refresh mode reported `unchanged` for embed
+ * directories that were actually broken by stale compile-breaking files.
+ */
 function directoryContentDiffers(src: string, dst: string): boolean {
   let differs = false;
   const walk = (srcDir: string, dstDir: string): void => {
@@ -301,6 +310,15 @@ function directoryContentDiffers(src: string, dst: string): boolean {
           return;
         }
         if (!fs.readFileSync(srcPath).equals(fs.readFileSync(dstPath))) {
+          differs = true;
+          return;
+        }
+      }
+    }
+    if (fs.existsSync(dstDir) && fs.statSync(dstDir).isDirectory()) {
+      for (const entry of fs.readdirSync(dstDir, { withFileTypes: true })) {
+        if (differs) return;
+        if (!fs.existsSync(path.join(srcDir, entry.name))) {
           differs = true;
           return;
         }
@@ -406,6 +424,33 @@ function mirrorDirectory(src: string, dst: string): void {
       fs.copyFileSync(sp, dp);
     }
   }
+  pruneDirectory(src, dst);
+}
+
+/**
+ * Delete everything under `dst` that does not exist under `src`, so the
+ * embedded package directory is a true mirror of the bundle. The embed
+ * target is fully bundle-managed: a file removed between plugin versions
+ * (e.g. 1.0.3's Cloud-era DeviceAuthFlow.cs) must not survive a restage —
+ * a stale .cs referencing since-deleted APIs breaks the whole asmdef
+ * compile, and a copy-over mirror used to leave exactly that behind.
+ */
+function pruneDirectory(src: string, dst: string): void {
+  for (const entry of fs.readdirSync(dst, { withFileTypes: true })) {
+    const sp = path.join(src, entry.name);
+    const dp = path.join(dst, entry.name);
+    if (entry.isDirectory()) {
+      if (fs.existsSync(sp)) {
+        pruneDirectory(sp, dp);
+      } else {
+        fs.rmSync(dp, { recursive: true, force: true });
+      }
+    } else if (entry.isFile()) {
+      if (!fs.existsSync(sp)) {
+        fs.rmSync(dp, { force: true });
+      }
+    }
+  }
 }
 
 /**
@@ -487,7 +532,7 @@ function humanBytes(n: number): string {
 
 /**
  * Generate a default UserSettings/uco-config.json matching
- * Unity-MCP-Plugin defaults: host = http://localhost:<hash>, random token,
+ * Unity-MCP-Plugin defaults: host = http://127.0.0.1:<hash>, random token,
  * keepServerRunning=true (so the Node server stays up between Editor
  * play-mode toggles), authOption=required.
  */

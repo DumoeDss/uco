@@ -259,7 +259,7 @@ function resolveConnection(
 
   const url = fromConfig.url
     ? fromConfig.url.replace(/\/$/, '')
-    : `http://localhost:${generatePortFromDirectory(projectPath)}`;
+    : `http://127.0.0.1:${generatePortFromDirectory(projectPath)}`;
 
   return { kind: 'success', url, token: opts.token ?? fromConfig.token };
 }

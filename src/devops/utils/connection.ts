@@ -81,7 +81,7 @@ export function resolveConnection(
     verbose(`Using URL from config (${config?.connectionMode} mode): ${url}`);
   } else {
     const port = generatePortFromDirectory(projectPath);
-    url = `http://localhost:${port}`;
+    url = `http://127.0.0.1:${port}`;
     verbose(`Using deterministic port URL: ${url}`);
   }
 

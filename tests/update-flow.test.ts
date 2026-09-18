@@ -428,7 +428,7 @@ describe('uco update live-catalog preservation', () => {
 describe('uco update MCP config reconciliation', () => {
   function writeProjectConfig(projectPath: string): { host: string; token: string } {
     fs.mkdirSync(path.join(projectPath, 'UserSettings'), { recursive: true });
-    const host = 'http://localhost:23456';
+    const host = 'http://127.0.0.1:23456';
     const token = 'test-token-value';
     fs.writeFileSync(
       path.join(projectPath, 'UserSettings', 'AI-Game-Developer-Config.json'),

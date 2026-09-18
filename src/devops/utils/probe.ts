@@ -1,4 +1,5 @@
 import { verbose } from './ui.js';
+import { normalizeLoopbackUrl } from '../../transport/loopback.js';
 
 export const PING_ENDPOINT = '/api/system-tools/ping';
 
@@ -19,10 +20,13 @@ export type ProbeResult = ProbeSuccess | ProbeFailure;
  * Probe an MCP server's ping endpoint. Returns structured result.
  */
 export async function probe(
-  baseUrl: string,
+  baseUrlRaw: string,
   headers: Record<string, string>,
   timeoutMs: number,
 ): Promise<ProbeResult> {
+  // localhost → 127.0.0.1 before dialing: fetch may otherwise take the ::1
+  // path, which per-process proxy rules commonly hijack (transport/loopback.ts).
+  const baseUrl = normalizeLoopbackUrl(baseUrlRaw);
   const endpoint = `${baseUrl}${PING_ENDPOINT}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

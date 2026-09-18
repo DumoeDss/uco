@@ -385,8 +385,7 @@ describe('three-surface Unity skill bundle', () => {
     // Rewind to the 0.3.1-era layout: markers under the legacy name, runtime
     // under .cocli/agent-runtime plus a legacy install manifest.
     fs.renameSync(path.join(projectPath, '.uco'), path.join(projectPath, '.cocli'));
-    fs.writeFileSync(path.join(projectPath, '.cocli', 'install-manifest.json'), '{}
-', 'utf8');
+    fs.writeFileSync(path.join(projectPath, '.cocli', 'install-manifest.json'), '{}\n', 'utf8');
     for (const skillId of ENTRY_SKILL_IDS) {
       fs.renameSync(
         path.join(skillsRoot, skillId, '.uco-skill.json'),

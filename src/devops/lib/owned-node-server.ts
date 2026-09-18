@@ -5,6 +5,7 @@ import { createServer, type Server as NetServer, type Socket } from 'node:net';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generatePortFromDirectory } from '../../config/port.js';
+import { normalizeLoopbackUrl } from '../../transport/loopback.js';
 import {
   generateConnectionToken,
   readConfig,
@@ -371,9 +372,11 @@ export function planOwnedServerCredentials(options: OwnedNodeServerOptions): Own
   const configuredHost = configured && isCustomMode(configured) && typeof configured.host === 'string'
     ? configured.host
     : undefined;
-  const baseUrl = stripTrailingSlash(
-    options.url ?? configuredHost ?? `http://localhost:${generatePortFromDirectory(options.projectPath)}`,
-  );
+  // Configured hosts written by older versions say `localhost`; normalize
+  // so the handoff health probe dials the IPv4 literal (see transport/loopback.ts).
+  const baseUrl = normalizeLoopbackUrl(stripTrailingSlash(
+    options.url ?? configuredHost ?? `http://127.0.0.1:${generatePortFromDirectory(options.projectPath)}`,
+  ));
   const endpoint = parseLocalEndpoint(baseUrl);
 
   if (authorization === 'none') {

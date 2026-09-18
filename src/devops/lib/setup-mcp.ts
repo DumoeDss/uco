@@ -67,7 +67,7 @@ export function computeAgentMcpProps(
 
   // Resolve URL — explicit override, then config, then deterministic
   // localhost fallback. Trailing slash stripped.
-  const serverUrl = (overrides.url ?? fromConfig.url ?? `http://localhost:${port}`).replace(/\/$/, '');
+  const serverUrl = (overrides.url ?? fromConfig.url ?? `http://127.0.0.1:${port}`).replace(/\/$/, '');
 
   const configPath = agent.getConfigPath(projectPath);
   const props = agent.getHttpProps(serverUrl, token, authRequired);

@@ -48,8 +48,8 @@ async function startServer(config: ServerConfig): Promise<{ handle: McpServerHan
   await handle.start();
   return {
     handle,
-    baseUrl: `http://localhost:${config.port}`,
-    wsUrl: `ws://localhost:${config.port}/hub/mcp-server`,
+    baseUrl: `http://127.0.0.1:${config.port}`,
+    wsUrl: `ws://127.0.0.1:${config.port}/hub/mcp-server`,
   };
 }
 
@@ -180,7 +180,7 @@ describe('9.1 REST round-trip', () => {
     const ctx = await startServer(config);
     try {
       const startedAt = Date.now();
-      const res = await fetch(`http://localhost:${config.port}/api/tools`);
+      const res = await fetch(`http://127.0.0.1:${config.port}/api/tools`);
       const durationMs = Date.now() - startedAt;
       expect(res.status).toBe(500);
       expect(durationMs).toBeLessThan(500);
@@ -641,7 +641,7 @@ describe('9.3 Auth flow', () => {
   });
 
   it('WS without token fails to connect', async () => {
-    const wsUrlNoToken = `ws://localhost:${handle.httpServer.address() && typeof handle.httpServer.address() === 'object' ? (handle.httpServer.address() as { port: number }).port : 8080}/hub/mcp-server`;
+    const wsUrlNoToken = `ws://127.0.0.1:${handle.httpServer.address() && typeof handle.httpServer.address() === 'object' ? (handle.httpServer.address() as { port: number }).port : 8080}/hub/mcp-server`;
     const client = new StubPluginClient({ url: wsUrlNoToken });
     await expect(client.connect()).rejects.toThrow();
   });

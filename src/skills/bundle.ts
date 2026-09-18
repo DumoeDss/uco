@@ -758,7 +758,14 @@ function assertManagedTarget(target: OutputTarget): void {
   ) {
     throw new Error(`Refusing to replace output with an invalid ownership manifest: ${target.destination}`);
   }
-  assertNoUnmanagedFiles(target.destination, ownership.managedFiles as string[]);
+  assertNoUnmanagedFiles(target.destination, ownership.managedFiles as string[], {
+    // resolveOwnershipFile may have fallen back to the pre-rename marker
+    // (.uco-skill.json renamed to .cocli-skill.json by a 0.3.x install).
+    // That file IS the ownership manifest we just validated — it must not
+    // count as unmanaged, or the in-place refresh of every pre-rename
+    // install is refused by its own marker.
+    alsoAllow: path.basename(ownershipPath),
+  });
 }
 
 /**
@@ -847,8 +854,13 @@ function isSafeRelativePath(value: string): boolean {
     && segments.every((segment) => segment !== '' && segment !== '..');
 }
 
-function assertNoUnmanagedFiles(destination: string, managedEntries: string[]): void {
+function assertNoUnmanagedFiles(
+  destination: string,
+  managedEntries: string[],
+  options: { alsoAllow?: string } = {},
+): void {
   const managedFiles = new Set(managedEntries);
+  if (options.alsoAllow !== undefined) managedFiles.add(options.alsoAllow);
   const unmanagedFiles = listRelativeFiles(destination)
     .filter((entry) => !managedFiles.has(entry));
   if (unmanagedFiles.length > 0) {

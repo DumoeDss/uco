@@ -120,9 +120,9 @@ describe('async call records over REST + deferred completions', () => {
     ], {});
     handle = createServer(config);
     await handle.start();
-    baseUrl = `http://localhost:${config.port}`;
+    baseUrl = `http://127.0.0.1:${config.port}`;
 
-    ws = new WebSocket(`ws://localhost:${config.port}/hub/mcp-server`);
+    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/mcp-server`);
     await new Promise<void>((resolve, reject) => {
       ws.once('open', () => resolve());
       ws.once('error', reject);

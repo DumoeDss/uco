@@ -291,7 +291,7 @@ describe('UCO feedback command contracts', () => {
       bodies.push(JSON.parse(String(init!.body)) as Record<string, unknown>);
       return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
     });
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
     await transport.callTool(
       'script-execute',
       { csharpCode: 'return;' },
@@ -535,7 +535,7 @@ describe('UCO feedback command contracts', () => {
         retryable: true,
       },
     }), { status: 503, statusText: 'Service Unavailable' }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('editor-application-get-state', {}, { timeoutMs: 5_000 }))
       .rejects.toMatchObject({ kind: 'http', status: 503 });
@@ -545,7 +545,7 @@ describe('UCO feedback command contracts', () => {
   it('returns a successful Editor-state probe without attaching synthetic retry state', async () => {
     const fetchImpl = vi.fn(async () => new Response(
       JSON.stringify({ isCompiling: false }), { status: 200 }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('editor-application-get-state', {}, { timeoutMs: 5_000 }))
       .resolves.toEqual({ isCompiling: false });
@@ -557,7 +557,7 @@ describe('UCO feedback command contracts', () => {
       status: 400,
       statusText: 'Bad Request',
     }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('editor-application-get-state', {})).rejects.toMatchObject({
       kind: 'http',

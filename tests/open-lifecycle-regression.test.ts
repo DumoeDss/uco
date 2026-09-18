@@ -74,7 +74,7 @@ beforeEach(() => {
   mocks.writeConfig.mockReset();
   mocks.clearCachedEditorPath.mockReset();
   mocks.prepareOwnedNodeServer.mockReset().mockResolvedValue({
-    baseUrl: 'http://localhost:23456',
+    baseUrl: 'http://127.0.0.1:23456',
     token: 'fixture-token',
     authorization: 'required',
     alreadyRunning: false,
@@ -114,7 +114,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
 
     const result = await openProject({
       projectPath: project,
-      url: 'http://localhost:23456',
+      url: 'http://127.0.0.1:23456',
       token: 'secret',
       auth: 'required',
       keepConnected: true,
@@ -131,7 +131,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
       executable,
       path.resolve(project),
       {
-        UNITY_MCP_HOST: 'http://localhost:23456',
+        UNITY_MCP_HOST: 'http://127.0.0.1:23456',
         UNITY_MCP_KEEP_CONNECTED: 'true',
         UNITY_MCP_TOOLS: 'scene,console',
         UNITY_MCP_TOKEN: 'secret',
@@ -234,7 +234,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
     mocks.prepareOwnedNodeServer.mockImplementation(async () => {
       order.push('node-ready');
       return {
-        baseUrl: 'http://localhost:23456',
+        baseUrl: 'http://127.0.0.1:23456',
         token: 'fixture-token',
         authorization: 'required',
         alreadyRunning: false,
@@ -250,7 +250,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
 
     const result = await openProject({
       projectPath: project,
-      url: 'http://localhost:23456',
+      url: 'http://127.0.0.1:23456',
       token: 'fixture-token',
       auth: 'required',
       startServer: true,
@@ -263,7 +263,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
       'C:\\Unity\\Editor\\Unity.exe',
       path.resolve(project),
       expect.objectContaining({
-        UNITY_MCP_HOST: 'http://localhost:23456',
+        UNITY_MCP_HOST: 'http://127.0.0.1:23456',
         UNITY_MCP_TOKEN: 'fixture-token',
         UNITY_MCP_AUTH_OPTION: 'required',
         UNITY_MCP_START_SERVER: 'false',
@@ -305,7 +305,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
 
     const result = await openProject({
       projectPath: project,
-      url: 'http://localhost:23456',
+      url: 'http://127.0.0.1:23456',
       token: secret,
       auth: 'required',
       startServer: true,

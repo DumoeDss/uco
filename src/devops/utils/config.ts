@@ -60,7 +60,7 @@ export function generateConnectionToken(): string {
 export function createDefaultConfig(projectPath: string): UnityConnectionConfig {
   const port = generatePortFromDirectory(projectPath);
   return {
-    host: `http://localhost:${port}`,
+    host: `http://127.0.0.1:${port}`,
     token: generateConnectionToken(),
     logLevel: 'Warning',
     keepServerRunning: true,

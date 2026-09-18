@@ -79,7 +79,7 @@ export function resolveConnection(opts: ResolveOptions): Resolved {
 
     // 3. Deterministic port fallback for the given project path.
     return {
-      baseUrl: `http://localhost:${generatePortFromDirectory(absProjectPath)}`,
+      baseUrl: `http://127.0.0.1:${generatePortFromDirectory(absProjectPath)}`,
       token: opts.token,
       source: 'deterministic',
       projectPath: absProjectPath,

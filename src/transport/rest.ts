@@ -12,6 +12,7 @@
 import type { UnityCoTransport, ToolInfo, PromptInfo, ResourceInfo, CallOptions } from './index.js';
 import { TransportError } from '../util/errors.js';
 import { normalizeCatalogResponse } from '../catalog.js';
+import { normalizeLoopbackUrl, isLoopbackUrl, looksRefused } from './loopback.js';
 import {
   isToolCallContext,
   linkAbortSignals,
@@ -42,7 +43,10 @@ export class RestTransport implements UnityCoTransport {
   private readonly fetchImpl: typeof fetch;
 
   constructor(cfg: RestTransportConfig) {
-    this.baseUrl = cfg.baseUrl.replace(/\/+$/, '');
+    // `localhost` is rewritten to 127.0.0.1: Node's fetch may resolve it to
+    // ::1 while our servers bind IPv4 loopback only, and per-process proxy
+    // rules frequently hijack the ::1 path (see transport/loopback.ts).
+    this.baseUrl = normalizeLoopbackUrl(cfg.baseUrl.replace(/\/+$/, ''));
     this.token = cfg.token;
     this.defaultTimeoutMs = cfg.defaultTimeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.fetchImpl = cfg.fetchImpl ?? globalThis.fetch;
@@ -231,7 +235,7 @@ export class RestTransport implements UnityCoTransport {
           });
         }
       }
-      throw classifyError(err, url, method, timeoutMs, opts?.context?.callId);
+      throw await classifyError(err, url, method, timeoutMs, opts?.context?.callId);
     } finally {
       clearTimeout(timer);
       callerSignal?.removeEventListener('abort', externalAbort);
@@ -346,7 +350,7 @@ function parseJsonOrText(text: string): unknown {
   }
 }
 
-function classifyError(err: unknown, url: string, method: string, timeoutMs: number, callId?: string): TransportError {
+async function classifyError(err: unknown, url: string, method: string, timeoutMs: number, callId?: string): Promise<TransportError> {
   if (err instanceof Error && err.name === 'AbortError') {
     return new TransportError({
       kind: 'timeout',
@@ -384,6 +388,30 @@ function classifyError(err: unknown, url: string, method: string, timeoutMs: num
       message: `Host not found: ${url}`,
       cause: err as Error,
     });
+  }
+  // A per-process proxy rule (matching node.exe) answers the TCP handshake
+  // for ANY loopback port and closes dead ones right after accept, so
+  // ECONNREFUSED never surfaces and the branch above never fires — users on
+  // proxified machines lose the actionable "is the Unity Editor running?"
+  // diagnosis to a bare `unknown / fetch failed`. The raw-TCP discriminator
+  // restores it; this only ever runs on the error path of an already-failed
+  // request (see transport/loopback.ts).
+  if (isLoopbackUrl(url)) {
+    try {
+      const { hostname, port: rawPort } = new URL(url);
+      const port = Number(rawPort);
+      if (Number.isInteger(port) && port > 0 && await looksRefused(hostname, port)) {
+        return new TransportError({
+          kind: 'connection-refused',
+          url,
+          method,
+          message: `Connection refused — is the Unity Editor (with AI Game Developer plugin) running?`,
+          cause: err as Error,
+        });
+      }
+    } catch {
+      // The discriminator is best-effort; fall through to `unknown`.
+    }
   }
   const msg = err instanceof Error ? err.message : String(err);
   return new TransportError({

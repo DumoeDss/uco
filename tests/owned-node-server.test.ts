@@ -76,7 +76,7 @@ describe('owned credential resolution', () => {
     const project = temporaryProject();
     writeConfig(project, {
       connectionMode: 'Custom',
-      host: 'http://localhost:24561',
+      host: 'http://127.0.0.1:24561',
       token: 'stored-token',
       authOption: 'none',
       unknown: { future: true },
@@ -130,7 +130,7 @@ describe('owned credential resolution', () => {
     const project = temporaryProject();
     expect(() => resolveOwnedServerCredentials({
       projectPath: project,
-      url: 'http://localhost:24564',
+      url: 'http://127.0.0.1:24564',
       token: 'must-not-leak',
       auth: 'none',
     })).toThrow(/cannot be combined/);

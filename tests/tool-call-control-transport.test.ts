@@ -29,12 +29,12 @@ describe('tool-call control REST transport', () => {
       requests.push({ url: String(url), init: init! });
       return jsonResponse({ status: 'success', content: [] });
     });
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await transport.callTool('regular-tool', { control: { toolArgument: true }, value: 2 });
 
     expect(requests).toHaveLength(1);
-    expect(requests[0]!.url).toBe('http://localhost:23456/api/tools/regular-tool');
+    expect(requests[0]!.url).toBe('http://127.0.0.1:23456/api/tools/regular-tool');
     expect(JSON.parse(String(requests[0]!.init.body))).toEqual({
       control: { toolArgument: true },
       value: 2,
@@ -47,7 +47,7 @@ describe('tool-call control REST transport', () => {
       bodies.push(JSON.parse(String(init!.body)));
       return jsonResponse({ status: 'success', content: [] });
     });
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     const options = {
       requestID: 'request-1',
@@ -111,7 +111,7 @@ describe('tool-call control REST transport', () => {
 
   it('rejects a pre-expired controlled deadline before fetch', async () => {
     const fetchImpl: typeof fetch = vi.fn(async () => jsonResponse({ status: 'success' }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('regular-tool', {}, {
       control: { callId: 'expired-call', deadlineUnixMs: Date.now() - 1 },
@@ -130,7 +130,7 @@ describe('tool-call control REST transport', () => {
       if (signal.aborted) onAbort();
       else signal.addEventListener('abort', onAbort, { once: true });
     }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('regular-tool', {}, {
       control: { callId: 'deadline-call', deadlineUnixMs: Date.now() + 25 },
@@ -149,7 +149,7 @@ describe('tool-call control REST transport', () => {
       const onAbort = (): void => reject(new DOMException('Aborted', 'AbortError'));
       observedSignal.addEventListener('abort', onAbort, { once: true });
     }));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
     const pending = transport.callTool('regular-tool', {}, {
       signal: caller.signal,
       control: { callId: 'cancel-call' },
@@ -176,7 +176,7 @@ describe('tool-call control REST transport', () => {
         details: { reason: 'test' },
       },
     }, 409));
-    const transport = new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+    const transport = new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 
     await expect(transport.callTool('regular-tool', {}, {
       control: { callId: 'call-rejected', correlationId: 'trace-rejected' },
@@ -215,7 +215,7 @@ describe('tool-call control REST transport', () => {
     });
 
     const regular = await runTool({
-      url: 'http://localhost:23456',
+      url: 'http://127.0.0.1:23456',
       toolName: 'regular-tool',
       input: { value: 1 },
       requestID: 'request-library',
@@ -223,7 +223,7 @@ describe('tool-call control REST transport', () => {
       fetchImpl,
     });
     const system = await runSystemTool({
-      url: 'http://localhost:23456',
+      url: 'http://127.0.0.1:23456',
       toolName: 'system-tool',
       input: { value: 2 },
       control: { callId: 'call-system-library', correlationId: 'trace-library' },
@@ -233,8 +233,8 @@ describe('tool-call control REST transport', () => {
     expect(regular.kind).toBe('success');
     expect(system.kind).toBe('success');
     expect(requests.map((entry) => entry.url)).toEqual([
-      'http://localhost:23456/api/tools/regular-tool',
-      'http://localhost:23456/api/system-tools/system-tool',
+      'http://127.0.0.1:23456/api/tools/regular-tool',
+      'http://127.0.0.1:23456/api/system-tools/system-tool',
     ]);
     expect(JSON.parse(String(requests[0]!.init.body))).toMatchObject({
       arguments: { value: 1 },

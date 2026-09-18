@@ -4,6 +4,7 @@
  * Mirrors the .NET DataArguments parameters.
  */
 
+import { readFileSync } from 'node:fs';
 import {
   DEFAULT_HEARTBEAT_INTERVAL_MS,
   DEFAULT_PORT,
@@ -34,7 +35,27 @@ export interface ServerConfig {
 }
 
 export const DEFAULT_SERVER_API_VERSION = '2.0.0';
-export const DEFAULT_SERVER_VERSION = '0.2.1-node';
+
+/**
+ * The banner's server version tracks the npm package version, read at module
+ * load. It used to be a hardcoded constant that no release remembered to
+ * bump — it still said `0.2.1-node` on the 1.0.x builds. Resolved from
+ * `package.json` relative to this module, which lands identically from
+ * `src/` (tests, tsx) and `dist/` (published builds); the literal is only the
+ * fallback for a unreadable manifest.
+ */
+export const DEFAULT_SERVER_VERSION = resolvePackageVersion('uco-unknown');
+
+function resolvePackageVersion(fallback: string): string {
+  try {
+    const pkg = JSON.parse(
+      readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
+    ) as { version?: unknown };
+    return typeof pkg.version === 'string' && pkg.version.length > 0 ? pkg.version : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 /**
  * Parse CLI args into a ServerConfig.

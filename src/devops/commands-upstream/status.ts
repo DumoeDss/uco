@@ -24,7 +24,7 @@ export const statusCommand = new Command('status')
     const projectPath = resolveAndValidateProjectPath(positionalPath, options);
     const { url: configUrl, token } = resolveConnection(projectPath, options);
     const localPort = generatePortFromDirectory(projectPath);
-    const localUrl = `http://localhost:${localPort}`;
+    const localUrl = `http://127.0.0.1:${localPort}`;
 
     const timeoutMs = parseInt(options.timeout ?? '5000', 10);
 

@@ -57,7 +57,7 @@ function scriptedTransport(statuses: string[], operationId = 'op-scripted'): Res
     }
     return new Response(JSON.stringify({ error: `unexpected ${url}` }), { status: 404 });
   });
-  return new RestTransport({ baseUrl: 'http://localhost:23456', fetchImpl });
+  return new RestTransport({ baseUrl: 'http://127.0.0.1:23456', fetchImpl });
 }
 
 const initialHandle = { status: 'success', structured: { OperationId: 'op-scripted', Status: 'queued', Phase: 'queued' } };

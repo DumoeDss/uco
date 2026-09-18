@@ -31,7 +31,7 @@ node .uco/agent-runtime/scripts/tool-info.mjs <exact-tool-name>
 ```
 
 4. Make the smallest coherent change, save Unity serialized state, and re-read it.
-5. After source/package changes, wait for import/domain reload and inspect new console errors.
+5. After source/package changes, wait for import/domain reload and inspect new console errors. When reading log files while the bridge is down, mind which Editor instance owns them — the machine-global `Editor.log` belongs to whichever Editor started last; prefer the project-local `Logs/Editor.log` (6000.x) or verify by `Library/ScriptAssemblies` DLL timestamps (see the diagnostics reference).
 6. Use a focused in-Editor test or screenshot when behavior or appearance matters.
 
 Never load `.uco/agent-runtime/catalog/tools.json` wholesale.

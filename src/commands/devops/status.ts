@@ -39,7 +39,7 @@ export function registerStatus(program: Command): void {
 
         // Probe deterministic-port URL too (it may differ if --url was passed)
         const localPort = generatePortFromDirectory(projectPath);
-        const localUrl = `http://localhost:${localPort}`;
+        const localUrl = `http://127.0.0.1:${localPort}`;
         const deterministicReachable =
           ctx.resolved.baseUrl === localUrl
             ? reachable

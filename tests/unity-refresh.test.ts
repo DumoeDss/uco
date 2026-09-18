@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { installAll, detectPackageSiblings } from '../src/devops/lib/install.js';
+import { installAll, detectPackageSiblings, pluginSurfaceDiffers } from '../src/devops/lib/install.js';
 import type { PluginSource } from '../src/devops/lib/types.js';
 import type { UnityLifecycleSession } from '../src/devops/lib/unity-lifecycle.js';
 import { executeCreateProject } from '../src/commands/devops/create-project.js';
@@ -91,6 +91,49 @@ describe('installAll refresh mode', () => {
     expect(fs.readFileSync(path.join(project, 'Assets', 'Plugins', 'NuGet', 'System.Text.Json.dll'), 'utf8')).toBe('v2-dll');
   });
 
+  it('prunes stale files the new bundle no longer ships (stale .cs must not survive a restage)', async () => {
+    const project = unityProject();
+    const { source } = pluginSource('2.0.0');
+    const nuget = nugetSource('v2-dll');
+    await callInstallAll({
+      unityProjectPath: project,
+      pluginSource: source,
+      stagedNugetPath: nuget,
+      refresh: true,
+      skipConfig: true,
+    });
+
+    // Simulate the upgrade-crossing-a-deletion leftover: a file (and its
+    // .meta) present in the installed embed copy but absent from the new
+    // bundle — exactly the 1.0.2 -> 1.0.4 DeviceAuthFlow.cs breakage class.
+    const embed = path.join(project, 'Packages', UCO_UNITY_PACKAGE_ID);
+    fs.mkdirSync(path.join(embed, 'Editor', 'Legacy'), { recursive: true });
+    const staleCs = path.join(embed, 'Editor', 'Legacy', 'DeviceAuthFlow.cs');
+    fs.writeFileSync(staleCs, '// stale: references APIs deleted upstream\n');
+    fs.writeFileSync(`${staleCs}.meta`, 'fileFormatVersion: 2\nguid: 2222222222222222222222222222222\n');
+    fs.writeFileSync(path.join(embed, 'Editor', 'Legacy', 'Orphan.dll'), 'stale-binary');
+
+    // The extra file counts as drift: refresh must not report `unchanged`.
+    expect(pluginSurfaceDiffers(project, source)).toBe(true);
+
+    const result = await callInstallAll({
+      unityProjectPath: project,
+      pluginSource: source,
+      stagedNugetPath: nuget,
+      refresh: true,
+      skipConfig: true,
+    });
+    expect(result.kind).toBe('success');
+    expect(fs.existsSync(staleCs)).toBe(false);
+    expect(fs.existsSync(`${staleCs}.meta`)).toBe(false);
+    // The whole source-absent directory is pruned, binary extras included.
+    expect(fs.existsSync(path.join(embed, 'Editor', 'Legacy'))).toBe(false);
+    // A source-shipped directory survives untouched.
+    expect(fs.readFileSync(path.join(embed, 'Runtime', 'Plugin.cs'), 'utf8')).toContain('2.0.0');
+    // Post-refresh state matches the bundle: no more drift.
+    expect(pluginSurfaceDiffers(project, source)).toBe(false);
+  });
+
   it('keeps the lockfile when the plugin surface is unchanged, deletes it when it changes', async () => {
     const project = unityProject();
     const { source } = pluginSource('1.0.0');
@@ -152,13 +195,13 @@ describe('installAll refresh mode', () => {
     const nuget = nugetSource('dll');
     fs.mkdirSync(path.join(project, 'UserSettings'), { recursive: true });
     const configPath = path.join(project, 'UserSettings', 'AI-Game-Developer-Config.json');
-    fs.writeFileSync(configPath, '{"host":"http://localhost:9999","token":"keep-me"}\n');
+    fs.writeFileSync(configPath, '{"host":"http://127.0.0.1:9999","token":"keep-me"}\n');
 
     const result = await callInstallAll({
       unityProjectPath: project, pluginSource: source, stagedNugetPath: nuget, refresh: true, skipConfig: true,
     });
     expect(result.kind).toBe('success');
-    expect(fs.readFileSync(configPath, 'utf8')).toBe('{"host":"http://localhost:9999","token":"keep-me"}\n');
+    expect(fs.readFileSync(configPath, 'utf8')).toBe('{"host":"http://127.0.0.1:9999","token":"keep-me"}\n');
   });
 
   it('warns about unrecognized package siblings without deleting them (refresh mode)', async () => {

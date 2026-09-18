@@ -30,7 +30,7 @@ function resolveProbeUrls(
 
   if (!options.url) {
     const localPort = generatePortFromDirectory(projectPath);
-    const localUrl = `http://localhost:${localPort}`;
+    const localUrl = `http://127.0.0.1:${localPort}`;
     if (localUrl !== configUrl) {
       urls.push(localUrl);
       verbose(`Will probe both config URL (${configUrl}) and local URL (${localUrl})`);
