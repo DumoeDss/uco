@@ -34,7 +34,7 @@ interface ErrorCause {
 }
 
 /**
- * Invoke a regular MCP tool over the Unity plugin's HTTP API.
+ * Invoke a regular tool over the Unity plugin's HTTP API.
  *
  * URL/token resolution priority: explicit override → project config →
  * deterministic localhost port. POSTs to `/api/tools/{name}`. No
@@ -46,7 +46,7 @@ export async function runTool(opts: RunToolOptions): Promise<RunToolResult> {
 }
 
 /**
- * Invoke a system tool (internal tool not exposed to MCP clients) over
+ * Invoke a system tool (internal tool not exposed in the regular tool list) over
  * the Unity plugin's HTTP API. POSTs to `/api/system-tools/{name}`.
  */
 export async function runSystemTool(opts: RunToolOptions): Promise<RunToolResult> {

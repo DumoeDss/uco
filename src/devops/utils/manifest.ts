@@ -220,7 +220,7 @@ export interface AddPluginResult {
 }
 
 /**
- * Add Unity-MCP plugin to a Unity project's Packages/manifest.json.
+ * Add Unity Copilot plugin to a Unity project's Packages/manifest.json.
  * Ports the C# Installer.Manifest.cs logic:
  * - Adds OpenUPM scoped registry with required scopes
  * - Adds/updates the plugin dependency
@@ -501,7 +501,7 @@ export interface RemovePluginResult {
 }
 
 /**
- * Remove Unity-MCP plugin from a Unity project's Packages/manifest.json.
+ * Remove Unity Copilot plugin from a Unity project's Packages/manifest.json.
  * Only removes the plugin dependency — scoped registries and scopes are
  * left untouched because other packages may depend on them.
  *
@@ -524,7 +524,7 @@ export function removePluginFromManifest(
   const manifest: Manifest = JSON.parse(rawJson);
 
   if (!manifest.dependencies || !(UCO_UNITY_PACKAGE_ID in manifest.dependencies)) {
-    logger.info('Unity-MCP plugin is not installed. Nothing to remove.');
+    logger.info('Unity Copilot plugin is not installed. Nothing to remove.');
     return { removed: false, manifestPath };
   }
 

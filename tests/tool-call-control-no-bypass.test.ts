@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { Command } from 'commander';
 import WebSocket from 'ws';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { ClientFacingMethod, ServerFacingMethod } from '../src/server/types.js';
 import {
@@ -187,7 +187,7 @@ async function expectCliRejection(program: Command, args: string[]): Promise<voi
 }
 
 describe('tool-call control no-bypass integration', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let plugin: RejectingMiddlewarePlugin;
 
@@ -197,7 +197,7 @@ describe('tool-call control no-bypass integration', () => {
     const address = await handle.start();
     baseUrl = `http://127.0.0.1:${address.port}`;
     plugin = new RejectingMiddlewarePlugin();
-    await plugin.connect(`ws://127.0.0.1:${address.port}/hub/mcp-server`);
+    await plugin.connect(`ws://127.0.0.1:${address.port}/hub/plugin`);
   });
 
   afterAll(async () => {

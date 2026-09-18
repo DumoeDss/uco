@@ -7,7 +7,7 @@
  */
 
 import type { StubPluginClient } from './index.js';
-import { ServerFacingMethod, type VersionHandshakeResponse, type McpServerData, type McpClientData, type ResponseData } from '../types.js';
+import { ServerFacingMethod, type VersionHandshakeResponse, type ServerData, type PluginClientData, type ResponseData } from '../types.js';
 
 export interface ScenarioResult {
   name: string;
@@ -38,28 +38,28 @@ export async function runServerFacingScenarios(client: StubPluginClient): Promis
     results.push({ name: 'PerformVersionHandshake', passed: false, message: String(err) });
   }
 
-  // 2. GetMcpClientData
+  // 2. GetPluginClientData
   try {
-    const result = await client.sendServerRequest(ServerFacingMethod.GetMcpClientData) as McpClientData[];
+    const result = await client.sendServerRequest(ServerFacingMethod.GetPluginClientData) as PluginClientData[];
     results.push({
-      name: 'GetMcpClientData',
+      name: 'GetPluginClientData',
       passed: Array.isArray(result),
       message: `count=${result?.length ?? 0}`,
     });
   } catch (err: unknown) {
-    results.push({ name: 'GetMcpClientData', passed: false, message: String(err) });
+    results.push({ name: 'GetPluginClientData', passed: false, message: String(err) });
   }
 
-  // 3. GetMcpServerData
+  // 3. GetServerData
   try {
-    const result = await client.sendServerRequest(ServerFacingMethod.GetMcpServerData) as McpServerData;
+    const result = await client.sendServerRequest(ServerFacingMethod.GetServerData) as ServerData;
     results.push({
-      name: 'GetMcpServerData',
+      name: 'GetServerData',
       passed: typeof result?.serverVersion === 'string',
       message: `serverVersion=${result?.serverVersion}, isAiAgentConnected=${result?.isAiAgentConnected}`,
     });
   } catch (err: unknown) {
-    results.push({ name: 'GetMcpServerData', passed: false, message: String(err) });
+    results.push({ name: 'GetServerData', passed: false, message: String(err) });
   }
 
   // 4. NotifyAboutUpdatedTools

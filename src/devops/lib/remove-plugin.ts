@@ -5,7 +5,7 @@ import { requireUnityProject } from './validation.js';
 import type { RemovePluginOptions, RemoveResult } from './types.js';
 
 /**
- * Remove the Unity-MCP plugin from a Unity project. Library-safe:
+ * Remove the Unity Copilot plugin from a Unity project. Library-safe:
  * never calls `process.exit`, never prints to stdout / stderr, never
  * throws past the public boundary.
  *
@@ -29,12 +29,12 @@ export async function removePlugin(opts: RemovePluginOptions): Promise<RemoveRes
     }
     const { projectPath } = validated;
 
-    emitProgress(opts.onProgress, { phase: 'start', message: `Removing Unity-MCP plugin from ${projectPath}` });
+    emitProgress(opts.onProgress, { phase: 'start', message: `Removing Unity Copilot plugin from ${projectPath}` });
 
     const result = removePluginFromManifest(projectPath, silentLogger);
 
     if (!result.removed) {
-      warnings.push('Unity-MCP plugin was not installed. Nothing was removed.');
+      warnings.push('Unity Copilot plugin was not installed. Nothing was removed.');
     }
 
     emitProgress(opts.onProgress, {

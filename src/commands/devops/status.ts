@@ -1,4 +1,4 @@
-// uco status — quick health overview: Unity process, MCP server reachability.
+// uco status — quick health overview: Unity process, bridge server reachability.
 
 import { Command } from 'commander';
 import { runCommand } from '../../util/cli-context.js';
@@ -18,7 +18,7 @@ const DEFAULT_STATUS_TIMEOUT_MS = 5_000;
 export function registerStatus(program: Command): void {
   program
     .command('status [project]')
-    .description('Show Unity process / MCP server reachability for a project.')
+    .description('Show Unity process / bridge server reachability for a project.')
     .option('--timeout-ms <ms>', `Per-probe timeout in milliseconds (canonical; default: ${DEFAULT_STATUS_TIMEOUT_MS}; range: 1-${MAX_TIMER_MILLISECONDS}; deprecated alias: --timeout)`)
     .option('--timeout <ms>', `Deprecated alias for --timeout-ms; milliseconds; default: ${DEFAULT_STATUS_TIMEOUT_MS}; range: 1-${MAX_TIMER_MILLISECONDS}`)
     .action(function (this: Command, projectArg: string | undefined, opts: StatusOpts) {
@@ -50,7 +50,7 @@ export function registerStatus(program: Command): void {
           unity: lookup.process
             ? { running: true, pid: lookup.process.pid }
             : { running: false, ...(lookup.detectionError !== undefined ? { detectionError: lookup.detectionError } : {}) },
-          mcpServer: {
+          bridge: {
             resolvedUrl: ctx.resolved.baseUrl,
             source: ctx.resolved.source,
             reachable: reachable.ok,

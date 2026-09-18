@@ -3,7 +3,7 @@ import {
   getOrCreateConfig,
   writeConfig,
   updateFeatures,
-  type McpFeature,
+  type ManagedFeature,
   type UnityConnectionConfig,
 } from '../utils/config.js';
 import { emitProgress } from './progress.js';
@@ -12,7 +12,7 @@ import type {
   ConfigureOptions,
   ConfigureResult,
   FeatureAction,
-  McpFeatureSnapshot,
+  ManagedFeatureSnapshot,
 } from './types.js';
 
 const CONFIG_RELATIVE_PATH = 'UserSettings/uco-config.json';
@@ -27,19 +27,19 @@ function hasAnyAction(action: FeatureAction | undefined): boolean {
   );
 }
 
-function snapshotFeatures(config: UnityConnectionConfig, key: 'tools' | 'prompts' | 'resources'): McpFeatureSnapshot[] {
+function snapshotFeatures(config: UnityConnectionConfig, key: 'tools' | 'prompts' | 'resources'): ManagedFeatureSnapshot[] {
   const raw = config[key];
   if (!Array.isArray(raw)) return [];
   return raw
     .filter(
-      (f): f is McpFeature =>
+      (f): f is ManagedFeature =>
         typeof f === 'object' && f !== null && typeof f.name === 'string' && typeof f.enabled === 'boolean',
     )
     .map((f) => ({ name: f.name, enabled: f.enabled }));
 }
 
 /**
- * Configure Unity-MCP features (tools / prompts / resources) for a
+ * Configure bridge features (tools / prompts / resources) for a
  * Unity project. Library-safe: no stdout noise, no process.exit.
  *
  * If none of `tools`/`prompts`/`resources` are supplied, the call is a
@@ -62,7 +62,7 @@ export async function configure(opts: ConfigureOptions): Promise<ConfigureResult
 
     const configPath = path.join(projectPath, CONFIG_RELATIVE_PATH);
 
-    emitProgress(opts.onProgress, { phase: 'start', message: `Configuring Unity-MCP features for ${projectPath}` });
+    emitProgress(opts.onProgress, { phase: 'start', message: `Configuring bridge features for ${projectPath}` });
 
     const config = getOrCreateConfig(projectPath);
 

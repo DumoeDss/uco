@@ -2,7 +2,6 @@
 // install manifest: every agent's entry Skills + the shared agent-runtime
 // (content-diff driven, no running Unity Editor required), the Unity plugin
 // package + NuGet DLL set as one matched set for bundle-sourced installs,
-// and per-agent MCP client configs from the project's live server settings.
 //
 // Upgrading the uco npm package itself stays `npm i -g uco@latest` —
 // update refreshes only what uco installed. Wraps `devops/lib/update.runUpdate`.
@@ -19,19 +18,17 @@ interface UpdateOpts {
   dryRun?: boolean;
   force?: boolean;
   skipUnity?: boolean;
-  skipMcpConfig?: boolean;
 }
 
 export function registerUpdate(program: Command): void {
   program
     .command('update [target]')
     .description(
-      'Refresh the uco-installed Skills, shared runtime, Unity toolchain (matched set), and agent MCP configs recorded in .uco/install-manifest.json. Default target: current directory. Idempotent — run it after every uco upgrade.',
+      'Refresh the uco-installed Skills, shared runtime, and Unity toolchain (matched set) recorded in .uco/install-manifest.json. Default target: current directory. Idempotent — run it after every uco upgrade.',
     )
     .option('--dry-run', 'Print the planned changes without writing anything')
     .option('--force', 'Refresh every recorded agent even when content-identical')
     .option('--skip-unity', 'Leave the Unity plugin package and NuGet DLL set untouched')
-    .option('--skip-mcp-config', 'Do not read or write any agent MCP config file')
     .action(function (this: Command, targetArg: string | undefined, opts: UpdateOpts) {
       return runCommand(this, async (ctx) => {
         const target = path.resolve(targetArg ?? process.cwd());
@@ -40,7 +37,6 @@ export function registerUpdate(program: Command): void {
           dryRun: opts.dryRun === true,
           force: opts.force === true,
           skipUnity: opts.skipUnity === true,
-          skipMcpConfig: opts.skipMcpConfig === true,
         });
         const unwrapped = unwrapResult(result);
 
@@ -108,28 +104,6 @@ function printUpdateSummary(result: UpdateSuccess): void {
         ? kleur.red(`✗ ${result.unity.detail}`)
         : kleur.gray(`  ${result.unity.status}`);
     w(`  ${mark}${kleur.gray(result.unity.status !== 'failed' ? ` — ${result.unity.detail}` : '')}`);
-  }
-
-  if (result.configSync.status !== 'disabled') {
-    w('');
-    w(kleur.bold('MCP configs:'));
-    if (result.configSync.status === 'skipped') {
-      w(kleur.gray(`  skipped — ${result.configSync.detail}`));
-    } else {
-      for (const agent of result.configSync.agents) {
-        const mark = agent.status === 'created'
-          ? kleur.green('✓ created')
-          : agent.status === 'updated'
-            ? kleur.green('✓ updated')
-            : agent.status === 'failed'
-              ? kleur.red(`✗ ${agent.error ?? 'failed'}`)
-              : kleur.gray('  unchanged');
-        w(`  ${kleur.cyan(agent.id.padEnd(16))} ${mark}  ${kleur.gray(agent.configPath)}`);
-      }
-      if (result.configSync.restartReminder) {
-        w(kleur.yellow('  Restart the affected agent(s) for the config change to take effect.'));
-      }
-    }
   }
 
   if (result.newAgentAdvisories.length > 0) {

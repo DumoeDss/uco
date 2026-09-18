@@ -8,7 +8,6 @@ import {
 } from '../utils/unity-editor.js';
 import { clearCachedEditorPath } from '../utils/editor-cache.js';
 import { findUnityProcess } from '../utils/unity-process.js';
-import { readConfig, isCloudMode, writeConfig } from '../utils/config.js';
 import { prepareOwnedNodeServer } from './owned-node-server.js';
 import {
   tryDismissLaunchErrorsDialog,
@@ -104,27 +103,27 @@ export function buildOpenEnv(
 
   const env: Record<string, string> = {};
 
-  if (options.url !== undefined) env['UNITY_MCP_HOST'] = options.url;
-  if (options.keepConnected) env['UNITY_MCP_KEEP_CONNECTED'] = 'true';
-  if (options.tools !== undefined) env['UNITY_MCP_TOOLS'] = options.tools;
-  if (options.token !== undefined) env['UNITY_MCP_TOKEN'] = options.token;
+  if (options.url !== undefined) env['UNITY_COPILOT_HOST'] = options.url;
+  if (options.keepConnected) env['UNITY_COPILOT_KEEP_CONNECTED'] = 'true';
+  if (options.tools !== undefined) env['UNITY_COPILOT_TOOLS'] = options.tools;
+  if (options.token !== undefined) env['UNITY_COPILOT_TOKEN'] = options.token;
 
   if (options.auth !== undefined) {
     if (!isValidAuth(options.auth)) {
       throw new Error('auth must be "none" or "required"');
     }
-    env['UNITY_MCP_AUTH_OPTION'] = options.auth;
+    env['UNITY_COPILOT_AUTH_OPTION'] = options.auth;
   }
 
   if (options.transport !== undefined) {
     if (!isValidTransport(options.transport)) {
       throw new Error('transport must be "streamableHttp" or "stdio"');
     }
-    env['UNITY_MCP_TRANSPORT'] = options.transport;
+    env['UNITY_COPILOT_TRANSPORT'] = options.transport;
   }
 
   if (options.startServer !== undefined) {
-    env['UNITY_MCP_START_SERVER'] = options.startServer ? 'true' : 'false';
+    env['UNITY_COPILOT_START_SERVER'] = options.startServer ? 'true' : 'false';
   }
 
   return Object.keys(env).length > 0 ? env : undefined;
@@ -256,27 +255,7 @@ export async function openProject(
       version,
     });
 
-    // Cloud-mode auto-detect: if the project's config is in Cloud
-    // mode AND has a cloudToken, ensure keepConnected so the plugin
-    // connects on startup; also enable claude-code skill auto-gen.
     let effectiveOptions = options;
-    {
-      const config = readConfig(projectPath);
-      if (config && isCloudMode(config) && config.cloudToken) {
-        if (!effectiveOptions.keepConnected) {
-          effectiveOptions = { ...effectiveOptions, keepConnected: true };
-          warnings.push('Cloud mode with token detected — auto-enabling keep-connected.');
-          // keepConnected flipped — rebuild the env map so the editor
-          // receives UNITY_MCP_KEEP_CONNECTED=true.
-          env = buildOpenEnv(effectiveOptions);
-        }
-        const skillAutoGenerate = { ...(config.skillAutoGenerate ?? {}) } as Record<string, boolean>;
-        if (!skillAutoGenerate['claude-code']) {
-          skillAutoGenerate['claude-code'] = true;
-          writeConfig(projectPath, { ...config, skillAutoGenerate });
-        }
-      }
-    }
 
     // Explicit --start-server true means UCO owns the Node process. Establish
     // its listener and authenticated health endpoint before Unity can attempt
@@ -313,8 +292,8 @@ export async function openProject(
     emitProgress(options.onProgress, {
       phase: 'connection-details',
       message: env
-        ? 'MCP connection environment variables prepared'
-        : 'No MCP connection environment variables (--no-connect or no options provided)',
+        ? 'Bridge connection environment variables prepared'
+        : 'No bridge connection environment variables (--no-connect or no options provided)',
       projectPath,
       editorPath,
       envVars: redactOpenEnvironment(env),
@@ -412,7 +391,7 @@ export async function openProject(
 
 function redactOpenEnvironment(env: Record<string, string> | undefined): Record<string, string> {
   const redacted = redactSensitiveValue(env ?? {}) as Record<string, string>;
-  if (env?.UNITY_MCP_TOKEN !== undefined) redacted.UNITY_MCP_TOKEN = '[REDACTED]';
+  if (env?.UNITY_COPILOT_TOKEN !== undefined) redacted.UNITY_COPILOT_TOKEN = '[REDACTED]';
   return redacted;
 }
 

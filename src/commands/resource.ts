@@ -1,4 +1,4 @@
-// uco resource [uri] — list Unity-MCP resources, or read one by URI.
+// uco resource [uri] — list uco bridge resources, or read one by URI.
 //
 // Resources are read-only state providers (editor state, project info, hierarchy, ...).
 //   uco resource                → list available resources (GET /api/resources)
@@ -14,7 +14,7 @@ interface ResourceOpts {
 export function registerResource(program: Command): void {
   program
     .command('resource [uri]')
-    .description('List Unity-MCP resources, or read one by URI (GET /api/resources/content?uri=).')
+    .description('List uco bridge resources, or read one by URI (GET /api/resources/content?uri=).')
     .option('-f, --filter <substring>', 'Filter by URI/name substring (list mode, case-insensitive)')
     .action(function (this: Command, uri: string | undefined, opts: ResourceOpts) {
       return runCommand(this, async (ctx) => {

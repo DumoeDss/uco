@@ -9,7 +9,7 @@ uco 是 Unity 的命令行副驾驶。它让你（或任意 AI 编程助手）�
 - **编辑器 / 项目生命周期**：安装 Unity、创建项目、构建、测试等。
 - **对运行中 Unity 编辑器的实时自动化**：通过纯 REST 查询工具、执行脚本、读写场景与对象。
 
-特点：AI 只需调用 shell 命令，不在会话里注册 MCP 工具表，保持 agent 接口精简；运行时走纯 REST（`POST /api/tools/{name}`），由 Unity 插件启动的本地工具服务器承接。
+特点：AI 只需调用 shell 命令，保持 agent 接口精简；运行时走纯 REST（`POST /api/tools/{name}`），由 Unity 插件启动的本地工具服务器承接。
 
 ## 2. 你会收到什么
 
@@ -80,10 +80,9 @@ uco update [目标目录]               # 默认：当前目录
 # uco update --dry-run              # 只打印计划改动，不写入
 # uco update --force                # 即使内容一致也重新生成所有已记录助手
 # uco update --skip-unity           # 不动 Unity 插件包与 NuGet DLL
-# uco update --skip-mcp-config      # 不读写任何助手的 MCP 配置
 ```
 
-`uco update` 依照 install manifest 刷新：每个已安装助手的 Skills 和共享的 `.uco/agent-runtime`（按内容差异驱动——无需运行中的 Unity Editor，且 `setup-skills` 产出的 live 工具目录不会被回退）；对 bundle 来源的安装，把 Unity 插件包与 NuGet DLL 作为**一套匹配集**整体重刷（旧 DLL 导致的 CS0246 编译错误不可能经 uco 发生）；并依据项目当前的 `UserSettings/uco-config.json` 重新对齐每个助手的 MCP 配置。命令幂等——紧接着再跑一次会输出 `Already up to date.`；绝不会自动安装未记录的助手（新检测到的助手目录只以提示形式出现，指向 `uco init --agent <id>`）。早于 manifest 的存量安装会在首次 update 时自动迁移。
+`uco update` 依照 install manifest 刷新：每个已安装助手的 Skills 和共享的 `.uco/agent-runtime`（按内容差异驱动——无需运行中的 Unity Editor，且 `setup-skills` 产出的 live 工具目录不会被回退）；对 bundle 来源的安装，把 Unity 插件包与 NuGet DLL 作为**一套匹配集**整体重刷（旧 DLL 导致的 CS0246 编译错误不可能经 uco 发生）。命令幂等——紧接着再跑一次会输出 `Already up to date.`；绝不会自动安装未记录的助手（新检测到的助手目录只以提示形式出现，指向 `uco init --agent <id>`）。早于 manifest 的存量安装会在首次 update 时自动迁移。
 
 ### 4.3 接入一个 Unity 项目
 

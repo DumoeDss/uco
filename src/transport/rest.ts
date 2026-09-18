@@ -1,4 +1,4 @@
-// REST transport — plain HTTP against Unity-MCP-Server's /api side-channel.
+// REST transport — plain HTTP against the bridge's /api side-channel.
 //
 // Endpoints (defined upstream):
 //   POST /api/tools/{name}            — invoke a registered tool

@@ -5,7 +5,7 @@ import { generatePortFromDirectory } from './port.js';
 
 export const CONFIG_RELATIVE_PATH = 'UserSettings/AI-Game-Developer-Config.json';
 
-export interface McpFeature {
+export interface ManagedFeature {
   name: string;
   enabled: boolean;
 }
@@ -20,10 +20,9 @@ export interface UnityConnectionConfig {
   transportMethod?: string;
   authOption?: string;
   connectionMode?: string | number;
-  cloudToken?: string | null;
-  tools?: McpFeature[];
-  prompts?: McpFeature[];
-  resources?: McpFeature[];
+  tools?: ManagedFeature[];
+  prompts?: ManagedFeature[];
+  resources?: ManagedFeature[];
   [key: string]: unknown;
 }
 
@@ -72,7 +71,6 @@ export function createDefaultConfig(projectPath: string): UnityConnectionConfig 
     allowLanBind: false,
     allowInsecureRemoteHttp: false,
     forceTokenWhenLanBind: true,
-    cloudToken: null,
     tools: [],
     prompts: [],
     resources: [],
@@ -174,9 +172,9 @@ export function updateFeatures(
   }
 ): void {
   const rawFeatures = config[featureType];
-  const features: McpFeature[] = Array.isArray(rawFeatures)
+  const features: ManagedFeature[] = Array.isArray(rawFeatures)
     ? rawFeatures.filter(
-        (f): f is McpFeature =>
+        (f): f is ManagedFeature =>
           typeof f === 'object' && f !== null && typeof f.name === 'string' && typeof f.enabled === 'boolean'
       )
     : [];
@@ -218,34 +216,21 @@ export function updateFeatures(
   config[featureType] = features;
 }
 
-/**
- * Determine whether the config is in Cloud mode.
- * Handles both string ("Cloud") and legacy integer (1) representations
- * of the ConnectionMode enum.
- */
-export function isCloudMode(config: UnityConnectionConfig): boolean {
-  const mode = config.connectionMode;
-  return mode === 'Cloud' || mode === 1;
-}
 
-export const CLOUD_SERVER_BASE_URL = 'https://ai-game.dev';
-export const CLOUD_SERVER_URL = 'https://ai-game.dev/mcp';
 
 /**
- * Resolve the server URL and auth token from a project config based on connectionMode.
- * - Custom mode (string "Custom" or integer 0): uses `host` and `token`
- * - Cloud mode (string "Cloud" or integer 1): uses hardcoded cloud URL and `cloudToken`
- * In Custom mode, `url` and `token` may be undefined if the corresponding config fields are not set.
- * In Cloud mode, `url` is always the hardcoded cloud URL, while `token` comes from `cloudToken` and may be undefined.
+ * Resolve the server URL and auth token from a project config. Custom-host
+ * semantics: `url` comes from `host`, `token` from `token`; either may be
+ * undefined when the config does not set it. (A legacy "Cloud" connectionMode
+ * value is tolerated and loads with the same host-driven behavior, mirroring
+ * the plugin's config migration.)
  */
 export function resolveConnectionFromConfig(config: UnityConnectionConfig): {
   url: string | undefined;
   token: string | undefined;
 } {
-  const cloud = isCloudMode(config);
-
   return {
-    url: cloud ? CLOUD_SERVER_URL : config.host,
-    token: cloud ? (config.cloudToken ?? undefined) : config.token,
+    url: config.host,
+    token: config.token,
   };
 }

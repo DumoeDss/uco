@@ -2,17 +2,17 @@
 /**
  * Stub-plugin client CLI entry point.
  *
- * Connects to a Node MCP Server and runs all RPC method scenarios,
+ * Connects to the uco bridge server and runs all RPC method scenarios,
  * printing a pass/fail report for each of the 20 methods.
  *
  * Usage:
- *   node bin/stub-plugin.mjs [--url ws://localhost:8080/hub/mcp-server] [--token secret]
+ *   node bin/stub-plugin.mjs [--url ws://127.0.0.1:8080/hub/plugin] [--token secret]
  */
 
 import { runFullTestReport } from '../dist/server/stub-client/scenarios.js';
 
 const args = process.argv.slice(2);
-let url = 'ws://localhost:8080/hub/mcp-server';
+let url = 'ws://127.0.0.1:8080/hub/plugin';
 let token;
 
 for (let i = 0; i < args.length; i++) {

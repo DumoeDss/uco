@@ -13,7 +13,7 @@
 //      projects.
 //   4. Initialise UserSettings/uco-config.json IFF missing.
 //
-// No server staging: the Unity plugin auto-starts the Node.js MCP server
+// No server staging: the Unity plugin auto-starts the Node.js bridge server
 // (uco) on launch, so no server binaries are copied into the project.
 //
 // Library-safe: never calls `process.exit`, never prints, returns a
@@ -44,10 +44,10 @@ const LOCKFILE_REL = 'Packages/packages-lock.json';
 const EMBED_REL = path.join('Packages', UCO_UNITY_PACKAGE_ID);
 
 /**
- * Install the Unity-MCP toolchain into a target Unity project.
+ * Install the uco toolchain into a target Unity project.
  *
  * This is the single end-user entry point. After it completes, the user
- * opens Unity once and the Plugin auto-starts the Node.js MCP server with
+ * opens Unity once and the Plugin auto-starts the Node.js bridge server with
  * the correct token + port.
  */
 export async function installAll(opts: InstallAllOptions): Promise<InstallAllResult> {
@@ -221,7 +221,7 @@ export async function installAll(opts: InstallAllOptions): Promise<InstallAllRes
       }
     }
 
-    nextSteps.push(`Open Unity Editor at ${projectPath} — the Plugin auto-starts its Node MCP server on first launch.`);
+    nextSteps.push(`Open Unity Editor at ${projectPath} — the Plugin auto-starts its Node bridge server on first launch.`);
     nextSteps.push('Run `uco ping` from the project directory to verify the bridge is live.');
 
     return {
@@ -532,7 +532,7 @@ function humanBytes(n: number): string {
 
 /**
  * Generate a default UserSettings/uco-config.json matching
- * Unity-MCP-Plugin defaults: host = http://127.0.0.1:<hash>, random token,
+ * Plugin defaults: host = http://127.0.0.1:<hash>, random token,
  * keepServerRunning=true (so the Node server stays up between Editor
  * play-mode toggles), authOption=required.
  */

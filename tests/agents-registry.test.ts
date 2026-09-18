@@ -54,8 +54,6 @@ describe('agent registry install-selection surface', () => {
     expect(windsurf).toBeDefined();
     expect(windsurf!.skillsPath).toBe('.windsurf/skills');
     expect(windsurf!.detectionPaths).toEqual(['.windsurf']);
-    expect(windsurf!.configPathDisplay).toBe('.windsurf/mcp.json');
-    expect(windsurf!.getConfigPath('C:/proj')).toBe(path.join('C:/proj', '.windsurf', 'mcp.json'));
   });
 
   it('lists skills-capable agents with detection paths for --list', () => {

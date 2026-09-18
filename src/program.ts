@@ -28,7 +28,7 @@ export function buildProgram(): Command {
     .name('uco')
     .description(
       'uco — Unity Co-Pilot CLI: drive Unity Editor via plain HTTP.\n' +
-        'Backed by the Unity Co-Pilot Node bridge; no MCP protocol on the wire.',
+        'Backed by the Unity Copilot Node bridge (plain REST + WebSocket wire).',
     )
     .version(VERSION)
     // Global options — every subcommand inherits these.
@@ -66,10 +66,10 @@ export function buildProgram(): Command {
   registerResource(program);
 
   // Dev-ops command suite (install-plugin, open, configure, status, etc.) —
-  // vendored from upstream Unity-MCP/cli (Apache-2.0).
+  // vendored from upstream bridge/cli (Apache-2.0).
   registerDevopsCommands(program);
 
-  // All Unity-MCP tools mirrored 1:1 as `uco <tool-name>`.
+  // All bridge tools mirrored 1:1 as `uco <tool-name>`.
   // Run `uco gen` against a running server to refresh.
   registerGeneratedTools(program);
 

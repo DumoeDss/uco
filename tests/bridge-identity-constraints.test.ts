@@ -14,7 +14,7 @@ import { forwardToPlugin, type ForwardDeps } from '../src/server/rest/forward.js
 import { PendingTracker } from '../src/server/ws/pending.js';
 import { ConnectionRegistry } from '../src/server/ws/registry.js';
 import { ClientFacingMethod, ServerFacingMethod } from '../src/server/types.js';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { makeRequest, makeResponse, serializeMessage, parseMessage } from '../src/server/ws/envelope.js';
 
@@ -323,7 +323,7 @@ describe('bridge identity constraints — served-identity echo', () => {
   };
   const generation = 21;
 
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let ws: WebSocket;
 
@@ -336,7 +336,7 @@ describe('bridge identity constraints — served-identity echo', () => {
     await handle.start();
     baseUrl = `http://127.0.0.1:${config.port}`;
 
-    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/mcp-server?instanceId=${encodeURIComponent(instanceId)}`);
+    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/plugin?instanceId=${encodeURIComponent(instanceId)}`);
     await new Promise<void>((resolve, reject) => {
       ws.once('open', resolve);
       ws.once('error', reject);

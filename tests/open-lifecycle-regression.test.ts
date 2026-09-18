@@ -89,7 +89,7 @@ afterEach(() => {
 });
 
 describe('enriched open regressions after lifecycle locator routing', () => {
-  it('still launches the editor directly with MCP env and waits for the child spawn event', async () => {
+  it('still launches the editor directly with bridge env and waits for the child spawn event', async () => {
     const project = unityProject();
     const executable = process.platform === 'win32' ? 'C:\\Unity\\Editor\\Unity.exe' : '/opt/unity/Editor/Unity';
     mocks.findEditorPath.mockResolvedValue(executable);
@@ -131,13 +131,13 @@ describe('enriched open regressions after lifecycle locator routing', () => {
       executable,
       path.resolve(project),
       {
-        UNITY_MCP_HOST: 'http://127.0.0.1:23456',
-        UNITY_MCP_KEEP_CONNECTED: 'true',
-        UNITY_MCP_TOOLS: 'scene,console',
-        UNITY_MCP_TOKEN: 'secret',
-        UNITY_MCP_AUTH_OPTION: 'required',
-        UNITY_MCP_TRANSPORT: 'streamableHttp',
-        UNITY_MCP_START_SERVER: 'false',
+        UNITY_COPILOT_HOST: 'http://127.0.0.1:23456',
+        UNITY_COPILOT_KEEP_CONNECTED: 'true',
+        UNITY_COPILOT_TOOLS: 'scene,console',
+        UNITY_COPILOT_TOKEN: 'secret',
+        UNITY_COPILOT_AUTH_OPTION: 'required',
+        UNITY_COPILOT_TRANSPORT: 'streamableHttp',
+        UNITY_COPILOT_START_SERVER: 'false',
       },
       expect.objectContaining({ onSpawn: expect.any(Function), onError: expect.any(Function) }),
     );
@@ -159,7 +159,7 @@ describe('enriched open regressions after lifecycle locator routing', () => {
     ]);
     const connectionDetails = events.find((event) => event.phase === 'connection-details');
     expect(connectionDetails).toMatchObject({
-      envVars: { UNITY_MCP_TOKEN: '[REDACTED]' },
+      envVars: { UNITY_COPILOT_TOKEN: '[REDACTED]' },
     });
     expect(JSON.stringify(events)).not.toContain('secret');
   });
@@ -263,10 +263,10 @@ describe('enriched open regressions after lifecycle locator routing', () => {
       'C:\\Unity\\Editor\\Unity.exe',
       path.resolve(project),
       expect.objectContaining({
-        UNITY_MCP_HOST: 'http://127.0.0.1:23456',
-        UNITY_MCP_TOKEN: 'fixture-token',
-        UNITY_MCP_AUTH_OPTION: 'required',
-        UNITY_MCP_START_SERVER: 'false',
+        UNITY_COPILOT_HOST: 'http://127.0.0.1:23456',
+        UNITY_COPILOT_TOKEN: 'fixture-token',
+        UNITY_COPILOT_AUTH_OPTION: 'required',
+        UNITY_COPILOT_START_SERVER: 'false',
       }),
       expect.any(Object),
     );

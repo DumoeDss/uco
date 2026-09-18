@@ -15,8 +15,8 @@ import type {
   RequestToolCompletedData,
   ResponseData,
   VersionHandshakeResponse,
-  McpClientData,
-  McpServerData,
+  PluginClientData,
+  ServerData,
 } from '../types.js';
 import { ServerFacingMethod } from '../types.js';
 import type { PendingTracker } from './pending.js';
@@ -43,8 +43,8 @@ export interface RpcContext {
    * the tracker no longer correlates the request.
    */
   onCallRecordCompleted?: (requestId: string, operationId: string | undefined, result: unknown, isError: boolean) => void;
-  /** Connected MCP client metadata for GetMcpClientData. */
-  clientData?: McpClientData[];
+  /** Connected plugin client metadata for GetPluginClientData. */
+  clientData?: PluginClientData[];
 }
 
 type RpcHandler = (params: unknown, ctx: RpcContext) => unknown | Promise<unknown>;
@@ -114,12 +114,12 @@ const PerformVersionHandshakeHandler: RpcHandler = (params, ctx) => {
   return response;
 };
 
-const GetMcpClientDataHandler: RpcHandler = (_params, ctx) => {
+const GetPluginClientDataHandler: RpcHandler = (_params, ctx) => {
   return ctx.clientData ?? [];
 };
 
-const GetMcpServerDataHandler: RpcHandler = (_params, ctx) => {
-  const serverData: McpServerData = {
+const GetServerDataHandler: RpcHandler = (_params, ctx) => {
+  const serverData: ServerData = {
     isAiAgentConnected: true,
     serverVersion: ctx.serverVersion,
     serverApiVersion: ctx.serverApiVersion,
@@ -206,8 +206,8 @@ function firstCompletedErrorText(result: unknown, maxLen = 1024): string | undef
 
 export const serverRpcHandlers: Record<string, RpcHandler> = {
   [ServerFacingMethod.PerformVersionHandshake]: PerformVersionHandshakeHandler,
-  [ServerFacingMethod.GetMcpClientData]: GetMcpClientDataHandler,
-  [ServerFacingMethod.GetMcpServerData]: GetMcpServerDataHandler,
+  [ServerFacingMethod.GetPluginClientData]: GetPluginClientDataHandler,
+  [ServerFacingMethod.GetServerData]: GetServerDataHandler,
   [ServerFacingMethod.NotifyAboutUpdatedTools]: NotifyAboutUpdatedToolsHandler,
   [ServerFacingMethod.NotifyAboutUpdatedPrompts]: NotifyAboutUpdatedPromptsHandler,
   [ServerFacingMethod.NotifyAboutUpdatedResources]: NotifyAboutUpdatedResourcesHandler,

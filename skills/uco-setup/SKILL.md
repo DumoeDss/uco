@@ -44,7 +44,7 @@ The result must contain exactly `uco-setup`, `unity-cli`, and `unity-editor`, pl
 
 ## Ownership boundaries
 
-- `uco create-project`, `install-plugin`, `install`, `configure`, `setup-mcp`, and `setup-skills` belong here.
+- `uco create-project`, `install-plugin`, `install`, `configure`, and `setup-skills` belong here.
 - Installing or using the official `unity` executable, Editor inventory, auth/license, and process-based build/test belong to `$unity-cli`.
 - Scene, GameObject, asset, script, graphics, physics, console, profiler, screenshot, and in-Editor tests belong to `$unity-editor`.
 - `open` and `wait-for-ready` are setup handoff commands here; routine runtime preflight is also summarized in `$unity-editor` so normal development does not load this Skill.

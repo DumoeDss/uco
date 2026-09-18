@@ -1,5 +1,5 @@
 /**
- * Shared TypeScript types for the Node MCP server.
+ * Shared TypeScript types for the Node bridge server.
  *
  * These mirror the C# model types in uco-framework/Uco.Framework.Common/src/Data/.
  * The JSON wire format must match the .NET server exactly (camelCase).
@@ -209,7 +209,7 @@ export interface VersionHandshakeResponse {
   message: string;
 }
 
-export interface McpClientData {
+export interface PluginClientData {
   isConnected: boolean;
   sessionId?: string | null;
   clientTitle?: string | null;
@@ -219,7 +219,7 @@ export interface McpClientData {
   clientWebsiteUrl?: string | null;
 }
 
-export interface McpServerData {
+export interface ServerData {
   serverVersion?: string;
   serverApiVersion?: string;
   isAiAgentConnected: boolean;
@@ -229,8 +229,8 @@ export interface McpServerData {
 
 export const ServerFacingMethod = {
   PerformVersionHandshake: 'PerformVersionHandshake',
-  GetMcpClientData: 'GetMcpClientData',
-  GetMcpServerData: 'GetMcpServerData',
+  GetPluginClientData: 'GetPluginClientData',
+  GetServerData: 'GetServerData',
   NotifyAboutUpdatedTools: 'NotifyAboutUpdatedTools',
   NotifyAboutUpdatedPrompts: 'NotifyAboutUpdatedPrompts',
   NotifyAboutUpdatedResources: 'NotifyAboutUpdatedResources',
@@ -250,8 +250,8 @@ export const ClientFacingMethod = {
   RunListSystemTool: 'RunListSystemTool',
   ForceDisconnect: 'ForceDisconnect',
   OnInitialClientData: 'OnInitialClientData',
-  OnMcpClientConnected: 'OnMcpClientConnected',
-  OnMcpClientDisconnected: 'OnMcpClientDisconnected',
+  OnPluginClientConnected: 'OnPluginClientConnected',
+  OnPluginClientDisconnected: 'OnPluginClientDisconnected',
 } as const;
 
 /** All additive and legacy valid method names. */
@@ -262,7 +262,7 @@ export const ALL_METHODS: ReadonlySet<string> = new Set<string>([
 
 // ===== Hub path and defaults =====
 
-export const HUB_PATH = '/hub/mcp-server';
+export const HUB_PATH = '/hub/plugin';
 export const DEFAULT_PORT = 8080;
 export const HEARTBEAT_METHOD = 'Heartbeat';
 export const DEFAULT_HEARTBEAT_INTERVAL_MS = 20_000;
@@ -271,7 +271,7 @@ export const TOOL_CALL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 export const MAX_RETRIES = 0;
 export const RETRY_DELAY_MS = 1000;
 export const SESSION_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-export const STDIO_SESSION_ID = 'stdio';
-export const SESSION_ID_HEADER = 'mcp-session-id';
-export const INSTANCE_ID_HEADER = 'mcp-instance-id';
+export const DEFAULT_SESSION_ID = 'stdio';
+export const SESSION_ID_HEADER = 'uco-session-id';
+export const INSTANCE_ID_HEADER = 'plugin-instance-id';
 export const WS_AUTH_CLOSE_CODE = 4001;

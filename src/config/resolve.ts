@@ -13,13 +13,11 @@ const CONFIG_RELATIVE_PATH = 'UserSettings/uco-config.json';
 // Pre-rename filename (uco 0.3.0): read as a fallback until every project
 // has been migrated (the plugin migrates it on first Editor start).
 const LEGACY_CONFIG_RELATIVE_PATH = 'UserSettings/AI-Game-Developer-Config.json';
-const CLOUD_SERVER_URL = 'https://ai-game.dev/mcp';
 
 export interface ProjectConfig {
   host?: string;
   token?: string;
-  cloudToken?: string;
-  connectionMode?: string | number;
+  connectionMode?: string | number; // legacy Cloud value loads as Custom (host-driven)
   // Other fields exist but uco doesn't care.
   [key: string]: unknown;
 }
@@ -37,7 +35,7 @@ export interface Resolved {
   baseUrl: string;
   token: string | undefined;
   /** Where the URL came from — useful for diagnostics. */
-  source: 'override' | 'config-custom' | 'config-cloud' | 'deterministic';
+  source: 'override' | 'config-custom' | 'deterministic';
   /** Resolved project path (absolute), if any. */
   projectPath: string | undefined;
 }
@@ -59,14 +57,6 @@ export function resolveConnection(opts: ResolveOptions): Resolved {
     const cfg = tryReadConfig(absProjectPath);
 
     if (cfg) {
-      if (isCloudMode(cfg)) {
-        return {
-          baseUrl: CLOUD_SERVER_URL,
-          token: opts.token ?? cfg.cloudToken,
-          source: 'config-cloud',
-          projectPath: absProjectPath,
-        };
-      }
       if (cfg.host) {
         return {
           baseUrl: stripTrailingSlash(cfg.host),
@@ -103,10 +93,6 @@ function tryReadConfig(projectPath: string): ProjectConfig | null {
     // Malformed config — treat as missing.
     return null;
   }
-}
-
-function isCloudMode(cfg: ProjectConfig): boolean {
-  return cfg.connectionMode === 'Cloud' || cfg.connectionMode === 1;
 }
 
 function stripTrailingSlash(s: string): string {

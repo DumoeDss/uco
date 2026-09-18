@@ -11,7 +11,7 @@ import type { InstallPluginOptions, InstallResult, PluginPlannedAction } from '.
 import { isValidVersion, isNewerVersion } from '../utils/semver.js';
 
 /**
- * Install the Unity-MCP plugin into a Unity project. Library-safe:
+ * Install the Unity Copilot plugin into a Unity project. Library-safe:
  * never calls `process.exit`, never prints to stdout / stderr, never
  * throws past the public boundary — errors are returned in
  * `{ kind: 'failure', success: false, error }`.
@@ -55,7 +55,7 @@ export async function installPlugin(
     }
     const { projectPath } = validated;
 
-    emitProgress(opts.onProgress, { phase: 'start', message: `Installing Unity-MCP plugin into ${projectPath}` });
+    emitProgress(opts.onProgress, { phase: 'start', message: `Installing Unity Copilot plugin into ${projectPath}` });
 
     let version = opts.version?.trim();
     const isExplicitVersion = !!version;

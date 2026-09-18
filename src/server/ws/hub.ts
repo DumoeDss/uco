@@ -1,5 +1,5 @@
 /**
- * WebSocket hub — accepts plugin connections at /hub/mcp-server.
+ * WebSocket hub — accepts plugin connections at /hub/plugin.
  *
  * Responsibilities:
  *   - Validate auth token from query param (?access_token=) or header
@@ -8,7 +8,7 @@
  *     resolve pending REST-forwarded request
  *   - Handle close/error: unregister connection, reject pending requests
  *   - Send OnInitialClientData notification on connect
- *   - Broadcast OnMcpClientConnected / OnMcpClientDisconnected notifications
+ *   - Broadcast OnPluginClientConnected / OnPluginClientDisconnected notifications
  */
 
 import { WebSocketServer, WebSocket } from 'ws';
@@ -43,7 +43,7 @@ import {
   HUB_PATH,
   ClientFacingMethod,
   HEARTBEAT_METHOD,
-  type McpClientData,
+  type PluginClientData,
 } from '../types.js';
 
 export interface HubOptions {
@@ -53,7 +53,7 @@ export interface HubOptions {
   serverApiVersion: string;
   serverVersion: string;
   heartbeatIntervalMs: number;
-  clientData?: McpClientData[];
+  clientData?: PluginClientData[];
   onToolsUpdated?: (connectionId: string, tools: unknown[]) => void;
   onPromptsUpdated?: (connectionId: string, prompts: unknown) => void;
   onResourcesUpdated?: (connectionId: string, resources: unknown[]) => void;
@@ -64,7 +64,7 @@ export interface HubOptions {
   ownedRuntime?: OwnedServerRuntime;
 }
 
-export class McpHub {
+export class PluginHub {
   private wss: WebSocketServer | null = null;
   private readonly registry: ConnectionRegistry;
   private readonly pending: PendingTracker;
@@ -72,7 +72,7 @@ export class McpHub {
   private readonly serverApiVersion: string;
   private readonly serverVersion: string;
   private readonly heartbeatIntervalMs: number;
-  private readonly clientData: McpClientData[];
+  private readonly clientData: PluginClientData[];
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
   private readonly onToolsUpdated?: (connectionId: string, tools: unknown[]) => void;
@@ -169,7 +169,7 @@ export class McpHub {
       this.wss!.handleUpgrade(req, socket, head, (ws: WebSocket) => {
         // Extract instanceId from query or header.
         const instanceId = searchParams.get('instanceId')
-          ?? req.headers['mcp-instance-id']?.toString()
+          ?? req.headers['plugin-instance-id']?.toString()
           ?? undefined;
         const token = this.authToken
           ? (searchParams.get('access_token') ?? this.extractBearerToken(req) ?? undefined)
@@ -190,11 +190,11 @@ export class McpHub {
     this.safeSend(ws, notif);
 
     // Tell every connection (this one included) that a new plugin joined.
-    // Params shape mirrors the C# OnMcpClientConnectedParams wrapper (camelCase):
-    // { connected: McpClientData, all: McpClientData[] }.
+    // Params shape mirrors the C# OnPluginClientConnectedParams wrapper (camelCase):
+    // { connected: PluginClientData, all: PluginClientData[] }.
     const connectedData = this.clientDataFor(this.registry.get(connectionId));
     if (connectedData) {
-      this.broadcastNotification(ClientFacingMethod.OnMcpClientConnected, {
+      this.broadcastNotification(ClientFacingMethod.OnPluginClientConnected, {
         connected: connectedData,
         all: this.connectionsClientData(),
       });
@@ -218,10 +218,10 @@ export class McpHub {
       // Tell the remaining connections this plugin went away. When the entry
       // is already gone (e.g. ForceDisconnect-replaced in single-plugin mode)
       // there is nothing meaningful to report — skip.
-      // Params shape mirrors the C# OnMcpClientDisconnectedParams wrapper:
-      // { disconnected: McpClientData, remaining: McpClientData[] }.
+      // Params shape mirrors the C# OnPluginClientDisconnectedParams wrapper:
+      // { disconnected: PluginClientData, remaining: PluginClientData[] }.
       if (leaving) {
-        this.broadcastNotification(ClientFacingMethod.OnMcpClientDisconnected, {
+        this.broadcastNotification(ClientFacingMethod.OnPluginClientDisconnected, {
           disconnected: { ...leaving, isConnected: false },
           remaining: this.connectionsClientData(),
         });
@@ -366,10 +366,10 @@ export class McpHub {
   // ===== Helpers =====
 
   /**
-   * Map a registry entry to the client-facing McpClientData shape
-   * (camelCase, mirrors the C# McpClientData [JsonPropertyName] attributes).
+   * Map a registry entry to the client-facing PluginClientData shape
+   * (camelCase, mirrors the C# PluginClientData [JsonPropertyName] attributes).
    */
-  private clientDataFor(entry: ConnectionEntry | undefined): McpClientData | undefined {
+  private clientDataFor(entry: ConnectionEntry | undefined): PluginClientData | undefined {
     if (!entry) return undefined;
     return {
       isConnected: true,
@@ -379,9 +379,9 @@ export class McpHub {
     };
   }
 
-  /** Snapshot of all live connections as McpClientData. */
-  private connectionsClientData(): McpClientData[] {
-    const out: McpClientData[] = [];
+  /** Snapshot of all live connections as PluginClientData. */
+  private connectionsClientData(): PluginClientData[] {
+    const out: PluginClientData[] = [];
     for (const entry of this.registry.snapshot()) {
       const data = this.clientDataFor(entry);
       if (data) out.push(data);

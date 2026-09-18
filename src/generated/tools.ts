@@ -2,7 +2,7 @@
 // Regenerate with: `npm run gen --silent -- <unity-project-path>`
 // or programmatically via src/codegen/{fetch,emit}.ts.
 //
-// Source: GET /api/tools from the uco bridge (IvanMurzak/Unity-MCP).
+// Source: GET /api/tools from the uco bridge (upstream lineage).
 // Each tool becomes a top-level commander subcommand whose flags
 // mirror its inputSchema.properties — required → .requiredOption(),
 // optional → .option(), with smart coercion for Vector3 / GameObjectRef

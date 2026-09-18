@@ -37,7 +37,7 @@ Supported agents: `uco init --list` (Claude Code, Codex, Cursor, ...).
 AI agent  →  uco (shell)  →  REST /api/tools/*  →  Node server  →  WebSocket  →  Unity plugin
 ```
 
-The agent surface stays small and discoverable — no MCP protocol or tool
+The agent surface stays small and discoverable — a single command family
 schemas enter the agent session; `uco --help` (and per-command help) expose
 typed options and JSON output. Editor/project lifecycle (installs, create,
 build, test) is handled by wrappers over the official `unity` CLI.
@@ -53,7 +53,7 @@ The official Unity CLI integration is implemented and locally verified against t
 
 ## Install from an offline bundle (distributing to others)
 
-uco installs from npm in one line; it also ships as a single self-contained `.tgz` that carries the CLI, its npm dependencies, the Unity-MCP plugin source, the compiled Node.js tool server, and the NuGet DLLs. A recipient installs it **fully offline**: no npm registry, OpenUPM, or git access required. The server is plain Node.js, so the same bundle works on Windows, macOS, and Linux.
+uco installs from npm in one line; it also ships as a single self-contained `.tgz` that carries the CLI, its npm dependencies, the Unity Copilot plugin source, the compiled Node.js tool server, and the NuGet DLLs. A recipient installs it **fully offline**: no npm registry, OpenUPM, or git access required. The server is plain Node.js, so the same bundle works on Windows, macOS, and Linux.
 
 ### Prerequisites (recipient)
 
@@ -69,7 +69,7 @@ uco install <path-to-your-unity-project>
 
 `uco install` embeds the plugin source into the project's `Packages/com.atelierai.unity.copilot/`, stages the NuGet DLLs into `Assets/Plugins/NuGet/`, and writes an initial `UserSettings/AI-Game-Developer-Config.json`. No server binaries are staged into the project.
 
-Open the project in Unity once — the plugin auto-starts its local Node MCP server on first launch.
+Open the project in Unity once — the plugin auto-starts its local Node bridge server on first launch.
 
 ```bash
 uco ping                          # from the project dir, verify the bridge is live
@@ -106,10 +106,9 @@ uco update [target]                 # default target: current directory
 # uco update --dry-run              # print the planned changes without writing
 # uco update --force                # regenerate every recorded agent even when content-identical
 # uco update --skip-unity           # leave the Unity plugin package and NuGet DLL set untouched
-# uco update --skip-mcp-config      # do not touch any agent MCP config file
 ```
 
-Per the install manifest, `uco update` refreshes every installed agent's Skills and the shared `.uco/agent-runtime` (content-diff driven — no running Unity Editor required, and a live catalog produced by `setup-skills` is never regressed), re-stages the Unity plugin package and NuGet DLL set as one matched set for bundle-sourced installs (so the stale-DLL CS0246 breakage cannot happen through uco), and reconciles each agent's MCP config from the project's live server settings. It is idempotent — a second run prints `Already up to date.` — and never onboards agents that were not installed (new agent directories surface only as an advisory pointing at `uco init --agent <id>`). Projects that predate the manifest are migrated automatically on first update.
+Per the install manifest, `uco update` refreshes every installed agent's Skills and the shared `.uco/agent-runtime` (content-diff driven — no running Unity Editor required, and a live catalog produced by `setup-skills` is never regressed), re-stages the Unity plugin package and NuGet DLL set as one matched set for bundle-sourced installs (so the stale-DLL CS0246 breakage cannot happen through uco), It is idempotent — a second run prints `Already up to date.` — and never onboards agents that were not installed (new agent directories surface only as an advisory pointing at `uco init --agent <id>`). Projects that predate the manifest are migrated automatically on first update.
 
 ### Rebuilding the bundle (distributor)
 
@@ -155,7 +154,7 @@ Requires Node.js 20 or later. The official `unity` CLI is:
 - required for `uco build` and top-level `uco test`;
 - recommended for the current lifecycle path and complete direct management/auth/license/Pipeline surface.
 
-Runtime commands additionally require a Unity project with the Unity-MCP plugin installed and a running Editor/server. `uco install [project]` provides the project toolchain setup. Lifecycle and batch commands do **not** require the REST server or a preliminary `uco ping`.
+Runtime commands additionally require a Unity project with the Unity Copilot plugin installed and a running Editor/server. `uco install [project]` provides the project toolchain setup. Lifecycle and batch commands do **not** require the REST server or a preliminary `uco ping`.
 
 ## Choose the right surface
 
@@ -216,7 +215,7 @@ uco --project ./MyGame ping
 uco --project ./MyGame gameobject-create --name Player --primitiveType Capsule
 ```
 
-Normal `open` locates and directly launches the Editor, injects the configured MCP connection environment, handles the launch-error dialog, and returns after the OS child emits `spawn`. That is not REST readiness. With explicit `--start-server true`, uco first starts or reuses a uco-owned loopback bridge and waits for its authenticated `/api/health`; only then does it launch Unity with `UNITY_MCP_START_SERVER=false`. If that Editor is already running, uco asks you to close and reopen it because a running process cannot receive the new connection environment. `wait-for-ready` still owns full bridge-and-Editor readiness, including `editor-application-get-state`; its timeout is milliseconds.
+Normal `open` locates and directly launches the Editor, injects the configured bridge connection environment, handles the launch-error dialog, and returns after the OS child emits `spawn`. That is not REST readiness. With explicit `--start-server true`, uco first starts or reuses a uco-owned loopback bridge and waits for its authenticated `/api/health`; only then does it launch Unity with `UNITY_COPILOT_START_SERVER=false`. If that Editor is already running, uco asks you to close and reopen it because a running process cannot receive the new connection environment. `wait-for-ready` still owns full bridge-and-Editor readiness, including `editor-application-get-state`; its timeout is milliseconds.
 
 Direct `uco-server` startup is secure by default: provide `--token` or `UCO_SERVER_TOKEN`. The compatibility opt-out, `--authorization none`, is loopback-only. A non-loopback `--listen-host` additionally requires explicit `--allow-lan`, required authentication, and a non-empty token.
 
@@ -315,7 +314,7 @@ Redaction is option-aware, not magical. Values inside opaque build `--args` or t
 
 ### Active dev-ops commands (16)
 
-`install-plugin`, `remove-plugin`, `configure`, `setup-mcp`, `open`, `close`, `wait-for-ready`, `status`, `setup-skills`, `setup-unity-cli`, `install-unity`, `create-project`, `editors`, `build`, `test`, and `login`.
+`install-plugin`, `remove-plugin`, `configure`, `open`, `close`, `wait-for-ready`, `status`, `setup-skills`, `setup-unity-cli`, `install-unity`, `create-project`, `editors`, `build`, and `test`.
 
 ### Generated tools (165 in the current snapshot)
 

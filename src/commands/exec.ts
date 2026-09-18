@@ -1,5 +1,5 @@
 // uco exec — Roslyn-execute arbitrary C# inside the Unity Editor (or
-// runtime build). This is Unity-MCP's killer primitive: when no
+// runtime build). This is the bridge's killer primitive: when no
 // pre-registered tool covers your need, you can write a C# snippet that
 // reaches anything in Unity's API and have it compiled + run on the
 // main thread.

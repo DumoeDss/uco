@@ -1,6 +1,6 @@
 // Resolve JSON Schema $ref pointers inside the tool's local $defs.
 //
-// Unity-MCP emits self-contained schemas: each tool's inputSchema has
+// The bridge emits self-contained schemas: each tool's inputSchema has
 // its own $defs map, and refs look like `#/$defs/UnityEngine.Vector3`.
 
 import type { JsonSchema } from './types.js';

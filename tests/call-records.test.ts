@@ -8,7 +8,7 @@ import {
   CallRecordStore,
   MAX_CALL_RECORDS,
 } from '../src/server/calls/call-record-store.js';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { ClientFacingMethod, ServerFacingMethod } from '../src/server/types.js';
 import {
@@ -107,7 +107,7 @@ describe('CallRecordStore unit semantics', () => {
 });
 
 describe('async call records over REST + deferred completions', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let ws: WebSocket;
   let calls = 0;
@@ -122,7 +122,7 @@ describe('async call records over REST + deferred completions', () => {
     await handle.start();
     baseUrl = `http://127.0.0.1:${config.port}`;
 
-    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/mcp-server`);
+    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/plugin`);
     await new Promise<void>((resolve, reject) => {
       ws.once('open', () => resolve());
       ws.once('error', reject);

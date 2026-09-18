@@ -88,7 +88,7 @@ export const UNSUPPORTED_PLATFORM_PREFIX =
  * - **macOS**: AppleScript via `osascript` (the leaner
  *   AX-C-API-direct path is a documented follow-up). Requires the
  *   user to have granted Accessibility permission to the terminal /
- *   `unity-mcp-cli` binary once.
+ *   the CLI once.
  * - **Linux/X11**: `xdotool` (documented as a Linux platform
  *   dependency; `wmctrl` is acceptable as an alternative window
  *   enumerator). Wayland is deferred — call out explicitly in the
@@ -141,13 +141,13 @@ export async function tryDismissLaunchErrorsDialog(
 export const WINDOWS_DISMISS_PS_SCRIPT = `
 $ErrorActionPreference = 'Stop'
 try {
-  if (-not ([System.Management.Automation.PSTypeName]'UnityMcp.LaunchErrors.Dismisser').Type) {
+  if (-not ([System.Management.Automation.PSTypeName]'UnityCopilot.LaunchErrors.Dismisser').Type) {
     Add-Type -TypeDefinition @"
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-namespace UnityMcp.LaunchErrors {
+namespace UnityCopilot.LaunchErrors {
   public static class Dismisser {
     public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
@@ -207,7 +207,7 @@ namespace UnityMcp.LaunchErrors {
   }
   $unityPids = @(Get-Process -Name 'Unity' -ErrorAction SilentlyContinue | ForEach-Object { [int]$_.Id })
   if ($unityPids.Count -eq 0) { Write-Output 'not-found'; return }
-  Write-Output ([UnityMcp.LaunchErrors.Dismisser]::TryDismiss([int[]]$unityPids))
+  Write-Output ([UnityCopilot.LaunchErrors.Dismisser]::TryDismiss([int[]]$unityPids))
 } catch {
   Write-Output ('error:' + $_.Exception.Message)
 }
@@ -249,7 +249,7 @@ async function tryDismissWindows(): Promise<DismissOutcome> {
  * permission not granted) is reported as `error:<message>` so the
  * caller can surface it once and continue polling.
  *
- * Requires the Terminal / `unity-mcp-cli` binary to have been granted
+ * Requires the Terminal / `uco` binary to have been granted
  * Accessibility permission in System Settings → Privacy & Security →
  * Accessibility. Documented in the README.
  */

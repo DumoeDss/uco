@@ -1,6 +1,6 @@
 // uco call <tool> [--args '<json>'] — escape hatch for tools that
 // don't have a first-class subcommand yet. Equivalent to the upstream
-// `unity-mcp-cli run-tool` but with uco's transport and output rules.
+// the legacy `run-tool` command but with uco's transport and output rules.
 //
 // uco call get <callId> / uco call list — query the server's bounded
 // durable call records (COCli-09): resolve an observed transport timeout

@@ -1,4 +1,4 @@
-// uco prompt [name] [--args '<json>'] — list or resolve Unity-MCP prompts.
+// uco prompt [name] [--args '<json>'] — list or resolve uco bridge prompts.
 //
 // Prompts are preset instruction templates (slash-commands) the Unity plugin exposes.
 //   uco prompt                 → list available prompts (GET /api/prompts)
@@ -15,7 +15,7 @@ interface PromptOpts {
 export function registerPrompt(program: Command): void {
   program
     .command('prompt [name]')
-    .description('List Unity-MCP prompts, or resolve one by name (POST /api/prompts/{name}).')
+    .description('List uco bridge prompts, or resolve one by name (POST /api/prompts/{name}).')
     .option('-a, --args <json>', 'JSON arguments for the prompt (resolve mode)', '{}')
     .option('-f, --filter <substring>', 'Filter prompt names by substring (list mode, case-insensitive)')
     .action(function (this: Command, name: string | undefined, opts: PromptOpts) {

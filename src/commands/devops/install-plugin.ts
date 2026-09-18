@@ -1,4 +1,4 @@
-// uco install-plugin — install Unity-MCP plugin into a Unity project.
+// uco install-plugin — install Unity Copilot plugin into a Unity project.
 //
 // Wraps devops/lib/install-plugin.ts (upstream's installPlugin).
 // Side effects:

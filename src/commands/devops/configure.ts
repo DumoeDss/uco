@@ -1,4 +1,4 @@
-// uco configure — enable/disable MCP tools, prompts, resources in
+// uco configure — enable/disable bridge tools, prompts, resources in
 // a Unity project's UserSettings/uco-config.json.
 
 import { Command } from 'commander';

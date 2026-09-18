@@ -3,7 +3,7 @@ import { join } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { verbose } from './ui.js';
 
-const CACHE_FILE = join(homedir(), '.unity-mcp-cli-editor-cache.json');
+const CACHE_FILE = join(homedir(), '.uco-editor-cache.json');
 
 // Storage key for the version-less "highest installed" lookup.
 // Underscored to stay out of the Unity-version namespace (e.g. `6000.3.1f1`).

@@ -161,7 +161,7 @@ export function isProcessAlive(pid: number, platform: SupportedPlatform = nodePl
  * receive the message. The `--timeout` will then elapse, and `--force` is
  * the only path that brings the process down. This is documented in the
  * close subcommand README and is consistent with the design decision to
- * stick to OS-level polite-quit (rather than a Unity-side MCP `editor-quit`
+ * stick to OS-level polite-quit (rather than a Unity-side `editor-quit`
  * tool which would route through SignalR and bypass session walls).
  */
 export function sendGracefulShutdown(pid: number, platform: SupportedPlatform = nodePlatform() as SupportedPlatform): boolean {

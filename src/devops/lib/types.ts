@@ -1,7 +1,7 @@
-// Shared public types for the unity-mcp-cli library API.
+// Shared public types for the uco library API.
 //
 // This file is re-exported from `lib.ts` — consumers should import
-// from `unity-mcp-cli` (the package root), NOT from deep paths.
+// from `@atelierai/uco` (the package root), NOT from deep paths.
 //
 // No top-level side effects, no runtime deps beyond TypeScript types.
 
@@ -265,7 +265,7 @@ export type RemoveResult = RemoveSuccess | RemoveFailure;
 // configure
 // ---------------------------------------------------------------------------
 
-/** Action applied to a set of MCP features (tools, prompts, or resources). */
+/** Action applied to a set of managed features (tools, prompts, or resources). */
 export interface FeatureAction {
   /** Explicit names to enable. */
   enableNames?: string[];
@@ -286,7 +286,7 @@ export interface ConfigureOptions {
   onProgress?: ProgressCallback;
 }
 
-export interface McpFeatureSnapshot {
+export interface ManagedFeatureSnapshot {
   name: string;
   enabled: boolean;
 }
@@ -296,9 +296,9 @@ export interface ConfigureSnapshot {
   keepConnected?: boolean;
   transportMethod?: string;
   authOption?: string;
-  tools: McpFeatureSnapshot[];
-  prompts: McpFeatureSnapshot[];
-  resources: McpFeatureSnapshot[];
+  tools: ManagedFeatureSnapshot[];
+  prompts: ManagedFeatureSnapshot[];
+  resources: ManagedFeatureSnapshot[];
 }
 
 export interface ConfigureSuccess {
@@ -321,59 +321,13 @@ export interface ConfigureFailure {
 export type ConfigureResult = ConfigureSuccess | ConfigureFailure;
 
 // ---------------------------------------------------------------------------
-// setup-mcp
-// ---------------------------------------------------------------------------
-
-export type McpTransport = 'stdio' | 'http';
-
-export interface SetupMcpOptions {
-  /**
-   * Agent to configure. Use `listAgentIds()` to discover valid values
-   * (e.g. `'claude-code'`, `'cursor'`, `'codex'`, …).
-   */
-  agentId: string;
-  /** Optional Unity project path. Defaults to `process.cwd()` if omitted. */
-  unityProjectPath?: string;
-  /** Transport to write — defaults to `'http'`. */
-  transport?: McpTransport;
-  /** Explicit server URL override (for http transport). */
-  url?: string;
-  /** Auth token override. */
-  token?: string;
-  onProgress?: ProgressCallback;
-}
-
-export interface SetupMcpSuccess {
-  kind: 'success';
-  success: true;
-  /** The agent whose config file was written. */
-  agentId: string;
-  /** Absolute path to the agent config file that was written. */
-  configPath: string;
-  /** Transport actually written. */
-  transport: McpTransport;
-  warnings: string[];
-  nextSteps: string[];
-}
-
-export interface SetupMcpFailure {
-  kind: 'failure';
-  success: false;
-  warnings: string[];
-  nextSteps: string[];
-  error: Error;
-}
-
-export type SetupMcpResult = SetupMcpSuccess | SetupMcpFailure;
-
-// ---------------------------------------------------------------------------
 // open-project
 // ---------------------------------------------------------------------------
 
-/** Auth option propagated to the Editor as `UNITY_MCP_AUTH_OPTION`. */
+/** Auth option propagated to the Editor as `UNITY_COPILOT_AUTH_OPTION`. */
 export type OpenProjectAuthOption = 'none' | 'required';
 
-/** Transport propagated to the Editor as `UNITY_MCP_TRANSPORT`. */
+/** Transport propagated to the Editor as `UNITY_COPILOT_TRANSPORT`. */
 export type OpenProjectTransport = 'streamableHttp' | 'stdio';
 
 export interface OpenProjectOptions {
@@ -385,34 +339,34 @@ export interface OpenProjectOptions {
   /** Specific Unity Editor version to use (e.g. `"2022.3.62f3"`). */
   unityVersion?: string;
   /**
-   * If `true`, skip wiring the MCP connection environment variables
+   * If `true`, skip wiring the bridge connection environment variables
    * onto the spawned editor process. Mirrors the CLI's `--no-connect`
    * flag semantics. Defaults to `false`.
    */
   noConnect?: boolean;
-  /** MCP server URL — sets `UNITY_MCP_HOST` on the editor process. */
+  /** bridge URL — sets `UNITY_COPILOT_HOST` on the editor process. */
   url?: string;
-  /** Auth token — sets `UNITY_MCP_TOKEN` on the editor process. */
+  /** Auth token — sets `UNITY_COPILOT_TOKEN` on the editor process. */
   token?: string;
-  /** Auth option — sets `UNITY_MCP_AUTH_OPTION` on the editor process. */
+  /** Auth option — sets `UNITY_COPILOT_AUTH_OPTION` on the editor process. */
   auth?: OpenProjectAuthOption;
-  /** Comma-separated list of tool names — sets `UNITY_MCP_TOOLS`. */
+  /** Comma-separated list of tool names — sets `UNITY_COPILOT_TOOLS`. */
   tools?: string;
   /**
-   * If `true`, sets `UNITY_MCP_KEEP_CONNECTED=true`. Auto-enabled by
+   * If `true`, sets `UNITY_COPILOT_KEEP_CONNECTED=true`. Auto-enabled by
    * Cloud-mode auto-detection when a `cloudToken` is present in the
    * project's config.
    */
   keepConnected?: boolean;
-  /** Transport — sets `UNITY_MCP_TRANSPORT`. */
+  /** Transport — sets `UNITY_COPILOT_TRANSPORT`. */
   transport?: OpenProjectTransport;
   /**
    * When `true`, uco starts or reuses its own local Node bridge, waits for
    * authenticated readiness, and only then launches Unity with
-   * `UNITY_MCP_START_SERVER=false` so the plugin does not start a duplicate.
+   * `UNITY_COPILOT_START_SERVER=false` so the plugin does not start a duplicate.
    * A running Editor cannot receive that new environment, so this mode asks
    * the caller to close and reopen it. When explicitly `false`, uco skips
-   * the owned preflight and passes `UNITY_MCP_START_SERVER=false` through.
+   * the owned preflight and passes `UNITY_COPILOT_START_SERVER=false` through.
    */
   startServer?: boolean;
   /**
@@ -520,7 +474,7 @@ export type OpenProjectResult = OpenProjectSuccess | OpenProjectFailure;
 
 /**
  * Subset of `OpenProjectOptions` consumed by `buildOpenEnv` — every
- * field on this interface is potentially mapped to a `UNITY_MCP_*`
+ * field on this interface is potentially mapped to a `UNITY_COPILOT_*`
  * environment variable. Declared as a dedicated interface (rather
  * than a `Pick<OpenProjectOptions, …>` re-listed inline) so adding a
  * new env-bearing option to `OpenProjectOptions` is a one-step change

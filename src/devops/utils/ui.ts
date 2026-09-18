@@ -70,7 +70,7 @@ export function configureStyledHelp(cmd: Command, appVersion?: string): Command 
       if (isRoot && appVersion) {
         lines.push(
           drawBox(
-            `${chalk.bold.cyan('Unity-MCP CLI')}  ${chalk.dim(`v${appVersion}`)}\n${chalk.dim('Bridge LLMs with Unity via Model Context Protocol')}`
+            `${chalk.bold.cyan('uco')}  ${chalk.dim(`v${appVersion}`)}\n${chalk.dim('Drive the Unity Editor from your terminal')}`
           )
         );
       } else {
@@ -120,7 +120,7 @@ export function configureStyledHelp(cmd: Command, appVersion?: string): Command 
       if (isRoot) {
         lines.push(
           chalk.dim('Run ') +
-          chalk.yellow('unity-mcp-cli <command> --help') +
+          chalk.yellow('uco <command> --help') +
           chalk.dim(' for detailed usage of each command.')
         );
         lines.push('');

@@ -10,18 +10,18 @@ import type { AddressInfo, Server as NetServer } from 'node:net';
 import { validateServerConfig, type ServerConfig } from './config.js';
 import { ConnectionRegistry } from './ws/registry.js';
 import { PendingTracker } from './ws/pending.js';
-import { McpHub } from './ws/hub.js';
+import { PluginHub } from './ws/hub.js';
 import { SessionStateStore } from './session/store.js';
 import { CallRecordStore } from './calls/call-record-store.js';
 import { createRestRouter } from './rest/router.js';
 import type { RestContext } from './rest/context.js';
-import type { McpClientData } from './types.js';
+import type { PluginClientData } from './types.js';
 
-export interface McpServerHandle {
+export interface BridgeHandle {
   /** The underlying HTTP server. */
   httpServer: Server;
   /** The WebSocket hub. */
-  hub: McpHub;
+  hub: PluginHub;
   /** The connection registry. */
   registry: ConnectionRegistry;
   /** The session store. */
@@ -46,14 +46,14 @@ export interface OwnedServerRuntime {
 }
 
 /**
- * Create the MCP server: HTTP REST + WebSocket hub.
+ * Create the bridge server: HTTP REST + WebSocket hub.
  *
  * @param config Server configuration.
  */
 export function createServer(
   config: ServerConfig,
   ownedRuntime?: OwnedServerRuntime,
-): McpServerHandle {
+): BridgeHandle {
   const validated = validateServerConfig(config);
   const multiPlugin = validated.authorization === 'required';
 
@@ -61,9 +61,9 @@ export function createServer(
   const pending = new PendingTracker();
   const sessionStore = new SessionStateStore();
   const callRecords = new CallRecordStore();
-  const clientData: McpClientData[] = [];
+  const clientData: PluginClientData[] = [];
 
-  const hub = new McpHub({
+  const hub = new PluginHub({
     registry,
     pending,
     authToken: validated.token,

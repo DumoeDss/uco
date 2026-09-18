@@ -1,6 +1,6 @@
-// Deterministic port derivation — matches Unity-MCP plugin's algorithm.
+// Deterministic port derivation — matches Unity Copilot plugin's algorithm.
 //
-// Source: Unity-MCP/cli/src/utils/port.ts (mirrors C# UnityMcpPlugin.GeneratePortFromDirectory).
+// Source: mirrors the C# GeneratePortFromDirectory derivation — must stay in sync with the plugin.
 // SHA256 of lowercased directory path → first 4 bytes LE as uint32 → mod 10000 + 20000.
 //
 // If the user changes the algorithm upstream (rare), the port the plugin

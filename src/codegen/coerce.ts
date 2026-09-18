@@ -2,7 +2,7 @@
 //
 // CLI flags are always strings; tool parameters expect typed objects.
 // These helpers translate the raw flag value into the shape the
-// upstream Unity-MCP server wants, with friendly shorthands for
+// upstream uco bridge wants, with friendly shorthands for
 // Vector3 ("1,2,3") and GameObjectRef ("/Player" or "1234").
 
 import { expandStructuredReference } from '../util/input.js';

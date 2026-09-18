@@ -2,9 +2,9 @@
 //
 // The CLI's commands depend only on the UnityCoTransport interface.
 // Today there is a single REST implementation that talks to the
-// upstream Unity-MCP-Server's /api/tools/{name} side-channel — the
-// same HTTP API the upstream unity-mcp-cli's `run-tool` uses, which
-// means we inherit zero protocol baggage from MCP.
+// upstream bridge-Server's /api/tools/{name} side-channel — the
+// same HTTP API the legacy `run-tool` used, which
+// means there is no protocol baggage on this wire.
 //
 // If we ever need a different wire format (e.g. our own forked
 // server, gRPC, in-process testing), we drop in a new implementation
@@ -94,7 +94,7 @@ export interface UnityCoTransport {
   /** Invoke a registered tool by name. */
   callTool(name: string, args: Record<string, unknown>, opts?: CallOptions): Promise<unknown>;
 
-  /** Invoke a system tool (e.g. ping, skill-generate) — not exposed to MCP clients. */
+  /** Invoke a system tool (e.g. ping, skill-generate) — not exposed in the regular tool list. */
   callSystemTool(name: string, args: Record<string, unknown>, opts?: CallOptions): Promise<unknown>;
 
   /** Enumerate the prompt catalog (preset instruction templates). */

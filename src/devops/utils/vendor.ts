@@ -33,15 +33,15 @@ export function hasVendorNuget(): boolean {
 }
 
 /**
- * Find the unity-copilot workspace root by walking upward from this file
- * until the `Unity-MCP` sibling directory appears (the workspace marker).
+ * Find the dev workspace root by walking upward from this file until the
+ * `uco-plugin` sibling directory appears (the workspace marker).
  * Falls back to `process.cwd()` when no marker is found within 8 levels.
  */
 export function findWorkspaceRoot(): string {
   const here = path.dirname(fileURLToPath(import.meta.url));
   let dir = here;
   for (let i = 0; i < 10; i++) {
-    if (fs.existsSync(path.join(dir, 'Unity-MCP')) && fs.existsSync(path.join(dir, 'uco'))) {
+    if (fs.existsSync(path.join(dir, 'uco-plugin')) && fs.existsSync(path.join(dir, 'cocli'))) {
       return dir;
     }
     const parent = path.dirname(dir);
@@ -60,8 +60,6 @@ export function workspaceNugetPath(): string {
 export function workspacePluginPath(): string {
   return path.join(
     findWorkspaceRoot(),
-    'Unity-MCP',
-    'Unity-MCP-Plugin',
     'Packages',
     UCO_UNITY_PACKAGE_ID,
   );

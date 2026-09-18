@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { ClientFacingMethod, ServerFacingMethod } from '../src/server/types.js';
 import {
@@ -222,7 +222,7 @@ const MAPPING: ReadonlyArray<{ code: string; status: number }> = [
 ];
 
 describe('g-005 Node safety error mapping', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let plugin: SafetyErrorPlugin;
 
@@ -232,7 +232,7 @@ describe('g-005 Node safety error mapping', () => {
     const address = await handle.start();
     baseUrl = `http://127.0.0.1:${address.port}`;
     plugin = new SafetyErrorPlugin();
-    await plugin.connect(`ws://127.0.0.1:${address.port}/hub/mcp-server`);
+    await plugin.connect(`ws://127.0.0.1:${address.port}/hub/plugin`);
   });
 
   afterAll(async () => {

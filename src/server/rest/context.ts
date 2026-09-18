@@ -5,7 +5,7 @@
 
 import type { ConnectionRegistry } from '../ws/registry.js';
 import type { PendingTracker } from '../ws/pending.js';
-import type { McpHub } from '../ws/hub.js';
+import type { PluginHub } from '../ws/hub.js';
 import type { SessionStateStore } from '../session/store.js';
 import type { CallRecordStore } from '../calls/call-record-store.js';
 import type { OwnedServerRuntime } from '../app.js';
@@ -19,7 +19,7 @@ import type { RpcError } from '../ws/envelope.js';
 export interface RestContext {
   registry: ConnectionRegistry;
   pending: PendingTracker;
-  hub: McpHub;
+  hub: PluginHub;
   sessionStore: SessionStateStore;
   /** Bounded durable call records (COCli-09); queryable after a timeout. */
   callRecords: CallRecordStore;

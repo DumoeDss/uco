@@ -8,7 +8,7 @@
 export {
   createServer,
   type ListeningAddress,
-  type McpServerHandle,
+  type BridgeHandle,
   type OwnedServerRuntime,
 } from './app.js';
 export {
@@ -22,7 +22,7 @@ export {
 } from './config.js';
 export { ConnectionRegistry } from './ws/registry.js';
 export { PendingTracker } from './ws/pending.js';
-export { McpHub } from './ws/hub.js';
+export { PluginHub } from './ws/hub.js';
 export { SessionStateStore, type SessionState } from './session/store.js';
 export * as types from './types.js';
 
@@ -69,7 +69,7 @@ export async function main(argv: string[]): Promise<void> {
   console.log(`  API version:  ${config.serverApiVersion}`);
   console.log(`  Server version: ${config.serverVersion}`);
   console.log(`  Auth: ${config.authorization}`);
-  console.log(`  WebSocket hub: ws://${displayHost}:${listening.port}/hub/mcp-server`);
+  console.log(`  WebSocket hub: ws://${displayHost}:${listening.port}/hub/plugin`);
   console.log(`  REST:  http://${displayHost}:${listening.port}/help`);
 
   // Graceful shutdown.

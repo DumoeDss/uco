@@ -7,7 +7,7 @@
 
 import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import WebSocket from 'ws';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { ClientFacingMethod, ServerFacingMethod } from '../src/server/types.js';
 import {
@@ -20,7 +20,7 @@ import {
 let nextPort = 18360;
 
 describe('tool failure diagnostics reach the REST response', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let ws: WebSocket;
   let latestToolResponse: Record<string, unknown> | undefined;
@@ -34,7 +34,7 @@ describe('tool failure diagnostics reach the REST response', () => {
     await handle.start();
     baseUrl = `http://127.0.0.1:${config.port}`;
 
-    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/mcp-server`);
+    ws = new WebSocket(`ws://127.0.0.1:${config.port}/hub/plugin`);
     await new Promise<void>((resolve, reject) => {
       ws.once('open', () => resolve());
       ws.once('error', reject);

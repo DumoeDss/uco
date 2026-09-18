@@ -17,7 +17,7 @@ export interface ProbeFailure {
 export type ProbeResult = ProbeSuccess | ProbeFailure;
 
 /**
- * Probe an MCP server's ping endpoint. Returns structured result.
+ * Probe the bridge server's ping endpoint. Returns structured result.
  */
 export async function probe(
   baseUrlRaw: string,

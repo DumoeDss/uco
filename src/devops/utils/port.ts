@@ -6,7 +6,7 @@ const PORT_RANGE = MAX_PORT - MIN_PORT + 1;
 
 /**
  * Generate a deterministic port from a directory path.
- * Ports the C# UnityMcpPlugin.GeneratePortFromDirectory() logic.
+ * Mirrors the C# GeneratePortFromDirectory derivation — must stay in sync.
  * SHA256 hash of lowercased directory → first 4 bytes as uint32 → modulo 10000 + 20000.
  */
 export function generatePortFromDirectory(dir: string): number {

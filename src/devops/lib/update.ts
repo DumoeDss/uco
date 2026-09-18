@@ -8,8 +8,6 @@
 //   3. The Unity plugin package + NuGet DLL set as ONE matched set for
 //      bundle-sourced installs (the stale-DLL CS0246 class of breakage is not
 //      reachable through this path).
-//   4. Per-agent MCP client configs, reconciled from the project's live
-//      server settings through the same writers `setup-mcp` uses.
 //
 // Never onboards an agent that is not in the manifest (new agents surface only
 // through the advisory). Upgrading the uco npm package itself stays
@@ -36,15 +34,11 @@ import {
 import {
   getAgentById,
   detectAgentsAt,
-  mergeJsonAgentConfigRoot,
-  mergeTomlAgentConfigLines,
-  MCP_SERVER_NAME,
 } from '../utils/agents.js';
 import { UCO_UNITY_PACKAGE_ID } from '../utils/manifest.js';
 import { resolveDefaultNugetSource, resolveDefaultPluginSource } from '../utils/vendor.js';
 import { installAll, nugetSurfaceDiffers, pluginSurfaceDiffers } from './install.js';
 import type { InstallAllOptions } from './types.js';
-import { computeAgentMcpProps } from './setup-mcp.js';
 import { emitProgress } from './progress.js';
 import type { ProgressCallback } from './types.js';
 
@@ -57,8 +51,6 @@ export interface UpdateOptions {
   force?: boolean;
   /** Skip the entire Unity toolchain surface. */
   skipUnity?: boolean;
-  /** Skip MCP config reconciliation. */
-  skipMcpConfig?: boolean;
   /**
    * Test seam: override the bundle's plugin package source and NuGet folder
    * (defaults: the uco package's vendor/ directory, dev workspace fallback).
@@ -91,20 +83,6 @@ export interface UnityRefreshReport {
   warnings: string[];
 }
 
-export interface AgentConfigReport {
-  id: string;
-  status: 'created' | 'updated' | 'unchanged' | 'failed';
-  configPath: string;
-  error?: string;
-}
-
-export interface ConfigSyncReport {
-  status: 'synced' | 'skipped' | 'disabled';
-  detail: string;
-  agents: AgentConfigReport[];
-  restartReminder: boolean;
-}
-
 export interface NewAgentAdvisory {
   id: string;
   detectionPaths: readonly string[];
@@ -120,7 +98,6 @@ export interface UpdateSuccess {
   agents: AgentRefreshReport[];
   runtime: RuntimeRefreshReport;
   unity: UnityRefreshReport;
-  configSync: ConfigSyncReport;
   newAgentAdvisories: NewAgentAdvisory[];
   /** True when nothing needed refreshing — the command prints "Already up to date." */
   upToDate: boolean;
@@ -192,7 +169,6 @@ export async function runUpdate(opts: UpdateOptions): Promise<UpdateResult> {
         agents: [],
         runtime: { status: 'unchanged', changedFileCount: 0, liveCatalogPreserved: false },
         unity: { status: 'skipped', detail: 'no Unity toolchain recorded', warnings: [] },
-        configSync: { status: 'skipped', detail: 'no installed agents', agents: [], restartReminder: false },
         newAgentAdvisories: [],
         upToDate: true,
         versionBefore,
@@ -278,9 +254,6 @@ export async function runUpdate(opts: UpdateOptions): Promise<UpdateResult> {
     // --- 3: Unity toolchain refresh (matched set) ---
     const unity = await refreshUnitySurface(target, manifest, opts, warnings);
 
-    // --- 4: MCP config reconciliation ---
-    const configSync = reconcileMcpConfigs(target, manifest, opts);
-
     // --- New-agent advisory (never auto-adds) ---
     const installedIds = new Set(manifest.agents.map((entry) => entry.id));
     const newAgentAdvisories: NewAgentAdvisory[] = [];
@@ -294,15 +267,13 @@ export async function runUpdate(opts: UpdateOptions): Promise<UpdateResult> {
 
     const allAgentsQuiet = agentReports.every((report) => report.status === 'unchanged');
     const unityQuiet = unity.status === 'unchanged' || unity.status === 'skipped';
-    const configsQuiet = configSync.agents.every((report) => report.status === 'unchanged');
     // The no-op decision is content-only: after a uco upgrade whose
     // templates are content-identical, every managed file already matches the
     // current output, so the run reports "Already up to date." and the version
     // restamp is included in the no-op (nothing was refreshed to restamp).
     const upToDate = allAgentsQuiet
       && runtime.status === 'unchanged'
-      && unityQuiet
-      && configsQuiet;
+      && unityQuiet;
 
     // One-shot source inference (design D4 "runs at most once per project"):
     // a sourceless legacy `unity` record gets its inferred source persisted
@@ -347,7 +318,6 @@ export async function runUpdate(opts: UpdateOptions): Promise<UpdateResult> {
       agents: agentReports,
       runtime,
       unity,
-      configSync,
       newAgentAdvisories,
       upToDate,
       versionBefore,
@@ -459,92 +429,5 @@ async function refreshUnitySurface(
       ? 'plugin package and NuGet DLL set would be re-staged from the uco bundle as one matched set'
       : 'plugin package and NuGet DLL set re-staged from the uco bundle as one matched set',
     warnings: result.warnings,
-  };
-}
-
-function reconcileMcpConfigs(
-  target: string,
-  manifest: InstallManifest,
-  opts: UpdateOptions,
-): ConfigSyncReport {
-  if (opts.skipMcpConfig === true) {
-    return { status: 'disabled', detail: '--skip-mcp-config', agents: [], restartReminder: false };
-  }
-  if (manifest.agents.length === 0) {
-    return { status: 'skipped', detail: 'no installed agents', agents: [], restartReminder: false };
-  }
-
-  // Resolve the project whose live server settings drive the entry. Never
-  // fabricate a host, port, or token: no config file means no write.
-  const candidates = [...new Set([manifest.unity.projectPath, target])]
-    .filter((candidate): candidate is string => candidate !== undefined)
-    .map((candidate) => path.resolve(candidate));
-  const projectWithConfig = candidates.find((candidate) =>
-    fs.existsSync(path.join(candidate, 'UserSettings', 'AI-Game-Developer-Config.json')));
-  if (projectWithConfig === undefined) {
-    return {
-      status: 'skipped',
-      detail: `no UserSettings/AI-Game-Developer-Config.json found under ${target} — run \`uco install <project>\` first; MCP configs left untouched`,
-      agents: [],
-      restartReminder: false,
-    };
-  }
-
-  const reports: AgentConfigReport[] = [];
-  for (const entry of manifest.agents) {
-    const agent = getAgentById(entry.id);
-    if (!agent) continue;
-    try {
-      const computed = computeAgentMcpProps(agent, projectWithConfig);
-      const current = fs.existsSync(computed.configPath)
-        ? fs.readFileSync(computed.configPath, 'utf8')
-        : undefined;
-      const existed = current !== undefined;
-
-      let nextContent: string;
-      if (agent.configFormat === 'toml') {
-        const lines = current !== undefined ? current.split('\n') : [];
-        const merged = mergeTomlAgentConfigLines(lines, agent.bodyPath, MCP_SERVER_NAME, computed.props, computed.removeKeys);
-        nextContent = merged.join('\n') + '\n';
-      } else {
-        let root: Record<string, unknown> = {};
-        if (current !== undefined) {
-          try {
-            const parsed = JSON.parse(current) as unknown;
-            if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
-              root = parsed as Record<string, unknown>;
-            }
-          } catch {
-            // Malformed file: the writer starts fresh; mirror that here.
-          }
-        }
-        const merged = mergeJsonAgentConfigRoot(root, agent.bodyPath, MCP_SERVER_NAME, computed.props, computed.removeKeys);
-        nextContent = JSON.stringify(merged, null, 2) + '\n';
-      }
-
-      if (current === nextContent) {
-        reports.push({ id: entry.id, status: 'unchanged', configPath: computed.configPath });
-        continue;
-      }
-      if (opts.dryRun !== true) {
-        fs.mkdirSync(path.dirname(computed.configPath), { recursive: true });
-        fs.writeFileSync(computed.configPath, nextContent, 'utf8');
-      }
-      reports.push({ id: entry.id, status: existed ? 'updated' : 'created', configPath: computed.configPath });
-    } catch (error) {
-      reports.push({
-        id: entry.id,
-        status: 'failed',
-        configPath: '',
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  }
-
-  return {
-    status: 'synced',
-    detail: `reconciled from ${path.join(projectWithConfig, 'UserSettings', 'AI-Game-Developer-Config.json')}`,
-    agents: reports,
-    restartReminder: reports.some((report) => report.status === 'created' || report.status === 'updated'),
   };
 }

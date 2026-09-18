@@ -1,5 +1,5 @@
 /**
- * Integration tests for the Node MCP Server.
+ * Integration tests for the Node bridge server.
  *
  * Tasks 9.1-9.5:
  *   9.1 REST→WS→plugin→WS→REST round-trip (GET /api/tools)
@@ -11,7 +11,7 @@
 
 import { describe, expect, it, beforeAll, afterAll, afterEach } from 'vitest';
 import WebSocket from 'ws';
-import { createServer, type McpServerHandle } from '../src/server/app.js';
+import { createServer, type BridgeHandle } from '../src/server/app.js';
 import { DEFAULT_SERVER_API_VERSION, parseServerConfig } from '../src/server/config.js';
 import { StubPluginClient, type StubPluginData } from '../src/server/stub-client/index.js';
 import { runServerFacingScenarios } from '../src/server/stub-client/scenarios.js';
@@ -43,13 +43,13 @@ function makeConfig(port: number, token?: string): ServerConfig {
 }
 
 /** Start a server and return the handle + URLs. */
-async function startServer(config: ServerConfig): Promise<{ handle: McpServerHandle; baseUrl: string; wsUrl: string }> {
+async function startServer(config: ServerConfig): Promise<{ handle: BridgeHandle; baseUrl: string; wsUrl: string }> {
   const handle = createServer(config);
   await handle.start();
   return {
     handle,
     baseUrl: `http://127.0.0.1:${config.port}`,
-    wsUrl: `ws://127.0.0.1:${config.port}/hub/mcp-server`,
+    wsUrl: `ws://127.0.0.1:${config.port}/hub/plugin`,
   };
 }
 
@@ -132,7 +132,7 @@ async function waitForNotification(client: StubPluginClient, method: string, tim
 // ===== 9.1: REST→WS→plugin→WS→REST round-trip =====
 
 describe('9.1 REST round-trip', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
   let client: StubPluginClient;
@@ -474,7 +474,7 @@ describe('9.1 REST round-trip', () => {
     expect(res.status).toBe(200);
     const text = await res.text();
     expect(text).toContain('REST endpoints');
-    expect(text).toContain('/hub/mcp-server');
+    expect(text).toContain('/hub/plugin');
   });
 });
 
@@ -502,7 +502,7 @@ describe('WebSocket heartbeat', () => {
 // ===== 9.2: All 7 server-facing RPC methods =====
 
 describe('9.2 Server-facing RPC methods', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let wsUrl: string;
   let client: StubPluginClient;
 
@@ -532,7 +532,7 @@ describe('9.2 Server-facing RPC methods', () => {
 // ===== 9.3: Auth flow =====
 
 describe('9.3 Auth flow', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
   const token = 'test-secret';
@@ -641,7 +641,7 @@ describe('9.3 Auth flow', () => {
   });
 
   it('WS without token fails to connect', async () => {
-    const wsUrlNoToken = `ws://127.0.0.1:${handle.httpServer.address() && typeof handle.httpServer.address() === 'object' ? (handle.httpServer.address() as { port: number }).port : 8080}/hub/mcp-server`;
+    const wsUrlNoToken = `ws://127.0.0.1:${handle.httpServer.address() && typeof handle.httpServer.address() === 'object' ? (handle.httpServer.address() as { port: number }).port : 8080}/hub/plugin`;
     const client = new StubPluginClient({ url: wsUrlNoToken });
     await expect(client.connect()).rejects.toThrow();
   });
@@ -650,7 +650,7 @@ describe('9.3 Auth flow', () => {
 // ===== 9.4: Session / instance flow =====
 
 describe('9.4 Session and instance flow', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
   let client: StubPluginClient;
@@ -729,7 +729,7 @@ describe('9.4 Session and instance flow', () => {
 // ===== 9.5: Deferred tool completion =====
 
 describe('9.5 Deferred tool completion', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
   let ws: WebSocket;
@@ -813,7 +813,7 @@ describe('9.5 Deferred tool completion', () => {
 // ===== 9.6: Multi-plugin routing (auth=required) =====
 
 describe('9.6 Multi-plugin routing (auth=required)', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
   const token = 'multi-secret';
@@ -874,7 +874,7 @@ describe('9.6 Multi-plugin routing (auth=required)', () => {
 // ===== 9.7: ForceDisconnect on second connection (auth=none) =====
 
 describe('9.7 ForceDisconnect on second connection', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let baseUrl: string;
   let wsUrl: string;
 
@@ -919,10 +919,10 @@ describe('9.7 ForceDisconnect on second connection', () => {
   });
 });
 
-// ===== 9.8: OnMcpClientConnected notification (auth=required) =====
+// ===== 9.8: OnPluginClientConnected notification (auth=required) =====
 
 describe('9.8 Client connected/disconnected notifications', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let wsUrl: string;
   const token = 'notif-secret';
 
@@ -937,7 +937,7 @@ describe('9.8 Client connected/disconnected notifications', () => {
     await handle?.stop();
   });
 
-  it('existing plugin receives OnMcpClientConnected when a second plugin joins', async () => {
+  it('existing plugin receives OnPluginClientConnected when a second plugin joins', async () => {
     const clientA = await connectStub(wsUrl, { token, instanceId: 'notif-a' });
     await waitForNotification(clientA, ClientFacingMethod.OnInitialClientData);
 
@@ -947,7 +947,7 @@ describe('9.8 Client connected/disconnected notifications', () => {
     let notif: { method: string; params: unknown } | undefined;
     for (let i = 0; i < 40 && !notif; i++) {
       notif = clientA.notifications.find((n) => {
-        if (n.method !== ClientFacingMethod.OnMcpClientConnected) return false;
+        if (n.method !== ClientFacingMethod.OnPluginClientConnected) return false;
         const p = n.params as { connected?: { sessionId?: string | null } };
         return p.connected?.sessionId === 'notif-b';
       });
@@ -967,10 +967,10 @@ describe('9.8 Client connected/disconnected notifications', () => {
   });
 });
 
-// ===== 9.9: OnMcpClientDisconnected notification (auth=required) =====
+// ===== 9.9: OnPluginClientDisconnected notification (auth=required) =====
 
 describe('9.9 Client connected/disconnected notifications', () => {
-  let handle: McpServerHandle;
+  let handle: BridgeHandle;
   let wsUrl: string;
   const token = 'notif-secret';
 
@@ -985,18 +985,18 @@ describe('9.9 Client connected/disconnected notifications', () => {
     await handle?.stop();
   });
 
-  it('remaining plugin receives OnMcpClientDisconnected when another plugin leaves', async () => {
+  it('remaining plugin receives OnPluginClientDisconnected when another plugin leaves', async () => {
     const clientA = await connectStub(wsUrl, { token, instanceId: 'dc-a' });
     await waitForNotification(clientA, ClientFacingMethod.OnInitialClientData);
     const clientB = await connectStub(wsUrl, { token, instanceId: 'dc-b' });
-    await waitForNotification(clientA, ClientFacingMethod.OnMcpClientConnected);
+    await waitForNotification(clientA, ClientFacingMethod.OnPluginClientConnected);
 
     clientB.disconnect();
 
-    const got = await waitForNotification(clientA, ClientFacingMethod.OnMcpClientDisconnected);
+    const got = await waitForNotification(clientA, ClientFacingMethod.OnPluginClientDisconnected);
     expect(got).toBe(true);
 
-    const notif = clientA.notifications.find((n) => n.method === ClientFacingMethod.OnMcpClientDisconnected);
+    const notif = clientA.notifications.find((n) => n.method === ClientFacingMethod.OnPluginClientDisconnected);
     expect(notif).toBeDefined();
     const params = notif!.params as {
       disconnected: { sessionId?: string | null; isConnected?: boolean };

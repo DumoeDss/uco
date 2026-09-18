@@ -22,7 +22,7 @@ import {
   RETRY_DELAY_MS,
   ClientFacingMethod,
 } from '../types.js';
-import type { McpHub } from '../ws/hub.js';
+import type { PluginHub } from '../ws/hub.js';
 import {
   createToolCallError,
   linkAbortSignals,
@@ -66,7 +66,7 @@ export interface ForwardOptions {
 export interface ForwardDeps {
   registry: ConnectionRegistry;
   pending: PendingTracker;
-  hub: McpHub;
+  hub: PluginHub;
   pluginTimeoutMs: number;
 }
 

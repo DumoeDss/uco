@@ -2,12 +2,12 @@
  * Session state store — mirrors the .NET ISessionStateStore.
  *
  * `Map<sessionId, SessionState>` with session-ID resolution from the
- * `Mcp-Session-Id` header (defaults to a stdio sentinel).
+ * `Uco-Session-Id` header (defaults to a stdio sentinel).
  *
  * Session sweeper removes sessions idle > 30 minutes.
  */
 
-import { SESSION_IDLE_TIMEOUT_MS, STDIO_SESSION_ID } from '../types.js';
+import { SESSION_IDLE_TIMEOUT_MS, DEFAULT_SESSION_ID } from '../types.js';
 
 export interface SessionState {
   sessionId: string;
@@ -18,11 +18,11 @@ export interface SessionState {
 }
 
 /**
- * Resolve the session ID from the Mcp-Session-Id header.
+ * Resolve the session ID from the Uco-Session-Id header.
  * Falls back to the stdio sentinel when missing.
  */
-export function resolveSessionId(headers: { 'mcp-session-id'?: string }): string {
-  return headers['mcp-session-id'] ?? STDIO_SESSION_ID;
+export function resolveSessionId(headers: { 'uco-session-id'?: string }): string {
+  return headers['uco-session-id'] ?? DEFAULT_SESSION_ID;
 }
 
 export class SessionStateStore {

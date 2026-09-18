@@ -327,9 +327,9 @@ export function printEditorNotFoundHelp(requestedVersion: string | undefined, co
   ui.heading('Options:');
 
   if (requestedVersion) {
-    ui.info(`Install it:  npx unity-mcp-cli install-unity ${requestedVersion}`);
+    ui.info(`Install it:  uco install-unity ${requestedVersion}`);
   }
-  ui.info('Install latest stable:  npx unity-mcp-cli install-unity');
+  ui.info('Install latest stable:  uco install-unity');
 
   // Show installed editors as alternatives
   const hubPath = findUnityHub();
@@ -342,8 +342,8 @@ export function printEditorNotFoundHelp(requestedVersion: string | undefined, co
       }
       if (requestedVersion) {
         const hint = commandName === 'connect'
-          ? `npx unity-mcp-cli ${commandName} --unity ${editors[0].version} --path <path> --url <url>`
-          : `npx unity-mcp-cli ${commandName} <path> --unity ${editors[0].version}`;
+          ? `uco ${commandName} --unity ${editors[0].version} --path <path> --url <url>`
+          : `uco ${commandName} <path> --unity ${editors[0].version}`;
         ui.info(`Use a different version:  ${hint}`);
       }
     }

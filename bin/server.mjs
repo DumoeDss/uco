@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Node MCP Server CLI entry point.
+ * uco bridge server CLI entry point.
  *
  * Usage:
  *   node bin/server.mjs [--listen-host 127.0.0.1] [--allow-lan] [--port 8080]

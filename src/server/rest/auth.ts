@@ -10,7 +10,7 @@
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
-import { SESSION_ID_HEADER, STDIO_SESSION_ID } from '../types.js';
+import { SESSION_ID_HEADER, DEFAULT_SESSION_ID } from '../types.js';
 import { sendError } from './context.js';
 
 export interface AuthOptions {
@@ -44,13 +44,13 @@ export function restAuthMiddleware(
 }
 
 /**
- * Extract the session ID from the Mcp-Session-Id header.
+ * Extract the session ID from the Uco-Session-Id header.
  * Returns the stdio sentinel when the header is absent.
  */
 export function extractSessionId(req: IncomingMessage): string {
   const raw = req.headers[SESSION_ID_HEADER];
   if (typeof raw === 'string' && raw.length > 0) return raw;
-  return STDIO_SESSION_ID;
+  return DEFAULT_SESSION_ID;
 }
 
 function sendUnauthorized(res: ServerResponse, message: string): void {

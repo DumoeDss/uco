@@ -1,5 +1,5 @@
 // uco open — launch the Unity Editor for a project, optionally
-// pre-wiring MCP connection env vars (UNITY_MCP_HOST/TOKEN/...).
+// pre-wiring bridge connection env vars (UNITY_COPILOT_HOST/TOKEN/...).
 //
 // Wraps devops/lib/open.ts which:
 //   - Detects the Editor version from ProjectSettings/ProjectVersion.txt
@@ -32,14 +32,14 @@ interface OpenOpts {
 export function registerOpen(program: Command): void {
   program
     .command('open [project]')
-    .description('Open a Unity project in the Unity Editor, optionally pre-wiring MCP connection env vars.')
+    .description('Open a Unity project in the Unity Editor, optionally pre-wiring bridge connection env vars.')
     .option('--unity <version>', 'Unity Editor version (default: from ProjectVersion.txt or highest installed)')
-    .option('--no-connect', 'Open without MCP connection env vars')
-    .option('--url <url>', 'MCP server URL (sets UNITY_MCP_HOST)')
-    .option('--token <token>', 'Auth token (sets UNITY_MCP_TOKEN)')
+    .option('--no-connect', 'Open without bridge connection env vars')
+    .option('--url <url>', 'Bridge server URL (sets UNITY_COPILOT_HOST)')
+    .option('--token <token>', 'Auth token (sets UNITY_COPILOT_TOKEN)')
     .option('--auth <mode>', 'Auth mode: none | required')
-    .option('--keep-connected', 'Keep MCP connection alive (sets UNITY_MCP_KEEP_CONNECTED)')
-    .option('--tools <list>', 'Comma-separated tool IDs to enable (UNITY_MCP_TOOLS)')
+    .option('--keep-connected', 'Keep bridge connection alive (sets UNITY_COPILOT_KEEP_CONNECTED)')
+    .option('--tools <list>', 'Comma-separated tool IDs to enable (UNITY_COPILOT_TOOLS)')
     .option('--transport <kind>', 'Transport: streamableHttp | stdio')
     .option('--start-server <bool>', 'true: start/verify a uco-owned bridge before Unity; false: disable Unity-side auto-start')
     .option('--no-auto-dismiss-launch-errors', 'Disable auto-dismiss of the "compile errors at launch" dialog')

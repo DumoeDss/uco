@@ -2,12 +2,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
 import {
   createServer,
-  type McpServerHandle,
+  type BridgeHandle,
   type OwnedServerRuntime,
 } from '../src/server/app.js';
 import { parseServerConfig, validateServerConfig } from '../src/server/config.js';
 
-const handles: McpServerHandle[] = [];
+const handles: BridgeHandle[] = [];
 
 afterEach(async () => {
   for (const handle of handles.splice(0)) await handle.stop();
@@ -161,7 +161,7 @@ describe('server listening and Origin boundary', () => {
     handles.push(server);
     const listening = await server.start();
     const ws = new WebSocket(
-      `ws://127.0.0.1:${listening.port}/hub/mcp-server?access_token=ws-secret`,
+      `ws://127.0.0.1:${listening.port}/hub/plugin?access_token=ws-secret`,
       { headers: { Origin: 'https://browser.example' } },
     );
 
@@ -184,7 +184,7 @@ describe('server listening and Origin boundary', () => {
     ], {}));
     handles.push(server);
     const listening = await server.start();
-    const ws = new WebSocket(`ws://127.0.0.1:${listening.port}/hub/mcp-server`, {
+    const ws = new WebSocket(`ws://127.0.0.1:${listening.port}/hub/plugin`, {
       headers: { Authorization: 'Bearer ws-header-secret' },
     });
 
@@ -249,7 +249,7 @@ describe('owned precommit transport gate', () => {
     handles.push(server);
     const listening = await server.start();
     const ws = new WebSocket(
-      `ws://127.0.0.1:${listening.port}/hub/mcp-server?access_token=owned-secret`,
+      `ws://127.0.0.1:${listening.port}/hub/plugin?access_token=owned-secret`,
     );
 
     const status = await new Promise<number>((resolve, reject) => {

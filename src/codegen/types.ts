@@ -1,4 +1,4 @@
-// Schema types for the GET /api/tools catalog the Unity-MCP server emits.
+// Schema types for the GET /api/tools catalog the uco bridge emits.
 
 export interface ToolCatalogEntry {
   name: string;

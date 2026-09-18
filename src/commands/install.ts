@@ -6,7 +6,7 @@
 //   - Initial config — UserSettings/uco-config.json (if missing)
 //
 // The tool server itself is not staged: the Unity plugin auto-starts the
-// Node.js MCP server (uco) on launch, so no server binaries live in the
+// Node.js bridge server (uco) on launch, so no server binaries live in the
 // project.
 //
 // Wraps `devops/lib/install.installAll`.
@@ -47,7 +47,7 @@ export function registerInstall(program: Command): void {
   program
     .command('install [project]')
     .description(
-      'Install the Unity-MCP toolchain into a Unity project (Plugin UPM + NuGet DLLs + initial config). One-shot, idempotent.',
+      'Install the uco toolchain into a Unity project (Plugin UPM + NuGet DLLs + initial config). One-shot, idempotent.',
     )
     .option('--from-file <path>', 'Plugin source: local file: path (default: workspace-relative fork)')
     .option('--from-git <url>', 'Plugin source: git URL (alternative to --from-file)')

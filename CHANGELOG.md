@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.7 - 2026-09-19
+
+- **Legacy agent-config writing removed.** uco no longer writes or
+  reconciles server entries into agent-client config files (`.mcp.json`,
+  Cursor, codex toml, …) — those entries pointed at a protocol surface the
+  bridge has never spoken and never worked; they only surfaced as dead
+  entries in agent tooling. `uco setup-mcp` and `uco login` are gone.
+  Existing entries in your projects are left untouched; delete them at will.
+- **Legacy naming surface scrubbed end to end.** The bridge speaks plain
+  REST (`/api/*`) plus a raw-WebSocket plugin hub — nothing else — and the
+  codebase, docs, skills, banner, help text, wire identifiers (hub path,
+  instance header, notification methods) and editor environment variables
+  (`UNITY_COPILOT_*`) now say exactly that.
+- The CLI update checker now checks **@atelierai/uco** on npm (it previously
+  queried a package that is not ours and could never report updates).
+- Vendored plugin refreshed to **1.0.5** with the matching wire identifiers.
+  **Both sides must move together**: a plugin older than 1.0.5 cannot connect
+  to this bridge, and this bridge does not accept the old plugin — upgrade
+  projects with `uco update` after installing 1.0.7.
+
+
 ## 1.0.6 - 2026-09-19
 
 - Agent MCP configs (`.mcp.json` and friends) written by `uco setup-mcp` /
