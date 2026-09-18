@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.6 - 2026-09-19
+
+- Agent MCP configs (`.mcp.json` and friends) written by `uco setup-mcp` /
+  `uco update` now dial `127.0.0.1` even when the project config's host says
+  `localhost` — third-party agent clients (Claude Code, codex) run on Node
+  runtimes that resolve `localhost` to `::1`, which per-process proxy rules
+  commonly hijack. The project config file itself is left untouched.
+
+
 ## 1.0.5 - 2026-09-19
 
 - **Embed upgrades now prune stale files.** The embedded package restage

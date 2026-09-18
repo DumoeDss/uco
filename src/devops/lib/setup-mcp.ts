@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { generatePortFromDirectory } from '../utils/port.js';
+import { normalizeLoopbackUrl } from '../../transport/loopback.js';
 import { readConfig, resolveConnectionFromConfig } from '../utils/config.js';
 import {
   getAgentById,
@@ -66,8 +67,14 @@ export function computeAgentMcpProps(
   const authRequired = auth === 'required';
 
   // Resolve URL — explicit override, then config, then deterministic
-  // localhost fallback. Trailing slash stripped.
-  const serverUrl = (overrides.url ?? fromConfig.url ?? `http://127.0.0.1:${port}`).replace(/\/$/, '');
+  // loopback fallback. Trailing slash stripped, and `localhost` is rewritten
+  // to the 127.0.0.1 literal: this URL is dialed by third-party agent clients
+  // (Claude Code, codex), whose Node runtimes resolve `localhost` to ::1 just
+  // like ours — and per-process proxy rules commonly hijack that path
+  // (see transport/loopback.ts). The config's own value is not modified.
+  const serverUrl = normalizeLoopbackUrl(
+    (overrides.url ?? fromConfig.url ?? `http://127.0.0.1:${port}`).replace(/\/$/, ''),
+  );
 
   const configPath = agent.getConfigPath(projectPath);
   const props = agent.getHttpProps(serverUrl, token, authRequired);

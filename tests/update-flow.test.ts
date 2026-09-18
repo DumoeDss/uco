@@ -473,6 +473,27 @@ describe('uco update MCP config reconciliation', () => {
     expect(cursorConfig.mcpServers['ai-game-developer'].url).toBe(host);
   });
 
+  it('writes 127.0.0.1 into agent MCP configs when the project config says localhost', async () => {
+    const target = temporaryTarget();
+    installAgents(target, ['claude-code']);
+    fs.mkdirSync(path.join(target, 'UserSettings'), { recursive: true });
+    fs.writeFileSync(
+      path.join(target, 'UserSettings', 'AI-Game-Developer-Config.json'),
+      JSON.stringify({ host: 'http://localhost:23456', token: 't', authOption: 'required', timeoutMs: 10000 }, null, 2) + '\n',
+    );
+
+    const result = await runUpdate({ targetPath: target });
+    expect(result.kind).toBe('success');
+    const claudeConfig = JSON.parse(fs.readFileSync(path.join(target, '.mcp.json'), 'utf8')) as Record<string, any>;
+    // Third-party agent clients (Claude Code & co.) run on Node too: their
+    // fetch resolves localhost to ::1, which per-process proxy rules hijack.
+    // The written entry must dial the IPv4 literal; the project config file
+    // itself is left untouched.
+    expect(claudeConfig.mcpServers['ai-game-developer'].url).toBe('http://127.0.0.1:23456');
+    const onDisk = JSON.parse(fs.readFileSync(path.join(target, 'UserSettings', 'AI-Game-Developer-Config.json'), 'utf8')) as { host: string };
+    expect(onDisk.host).toBe('http://localhost:23456');
+  });
+
   it('leaves an in-sync config byte-identical and reports it unchanged', async () => {
     const target = temporaryTarget();
     installAgents(target, ['claude-code']);
