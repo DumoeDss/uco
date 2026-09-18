@@ -97,7 +97,7 @@ describe('detectAgentsAt', () => {
     // unity-ai's config destination exists, but it is not skills-capable and
     // carries no detection paths — it must never be detected.
     fs.mkdirSync(path.join(target, 'UserSettings'), { recursive: true });
-    fs.writeFileSync(path.join(target, 'UserSettings', 'mcp.json'), '{}\n');
+    fs.writeFileSync(path.join(target, 'UserSettings', 'agent-config.json'), '{}\n');
 
     expect(detectAgentsAt(target)).toEqual([]);
   });

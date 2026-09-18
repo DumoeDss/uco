@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.9 - 2026-09-19
+
+- Vendored plugin refreshed to **1.0.7**: the complete legacy-naming sweep —
+  dead config-builder helpers removed (the last code producing
+  agent-config-shaped JSON), internal docs rewritten to the current
+  architecture, package/UI naming cleaned end to end, and a live prefs-key
+  bug fixed (the tool-group flag now reads the key its own migration writes).
+  Framework tests 831x2, 2022.3 gate 857/858 unchanged.
+
+
 ## 1.0.8 - 2026-09-19
 
 - Vendored plugin refreshed to **1.0.6**: the C# source's internal type and
@@ -14,10 +24,10 @@
 ## 1.0.7 - 2026-09-19
 
 - **Legacy agent-config writing removed.** uco no longer writes or
-  reconciles server entries into agent-client config files (`.mcp.json`,
+  reconciles server entries into agent-client config files
   Cursor, codex toml, …) — those entries pointed at a protocol surface the
   bridge has never spoken and never worked; they only surfaced as dead
-  entries in agent tooling. `uco setup-mcp` and `uco login` are gone.
+  entries in agent tooling. The legacy setup and login commands are gone.
   Existing entries in your projects are left untouched; delete them at will.
 - **Legacy naming surface scrubbed end to end.** The bridge speaks plain
   REST (`/api/*`) plus a raw-WebSocket plugin hub — nothing else — and the
@@ -34,7 +44,7 @@
 
 ## 1.0.6 - 2026-09-19
 
-- Agent MCP configs (`.mcp.json` and friends) written by `uco setup-mcp` /
+- Agent-client config files written by the legacy setup command /
   `uco update` now dial `127.0.0.1` even when the project config's host says
   `localhost` — third-party agent clients (Claude Code, codex) run on Node
   runtimes that resolve `localhost` to `::1`, which per-process proxy rules
@@ -54,8 +64,8 @@
   (Node's fetch may resolve `localhost` to ::1, which proxy rules matching
   node.exe commonly hijack), and a dead bridge behind such a proxy still
   classifies as `connection-refused` instead of an opaque `fetch failed`.
-  `uco open --start-server` handoff health checks and generated MCP configs
-  (`.mcp.json`) use `127.0.0.1` as well.
+  `uco open --start-server` handoff health checks and generated agent configs use
+  `127.0.0.1` as well.
 - Legacy `.cocli-skill.json` markers refresh in place again (a pre-rename
   install was refused by its own ownership marker; the marker file itself
   no longer counts as unmanaged).
@@ -68,7 +78,7 @@
 
 ## 1.0.4 - 2026-09-17
 
-- Server startup banner says "uco bridge" (was "Node MCP Server"); help
+- Server startup banner says "uco bridge"; help
   endpoint header updated to match.
 - Vendored plugin refreshed to **1.0.4**: the in-editor updater now
   detects embedded installs (uco install) and directs the user to the
@@ -81,7 +91,7 @@
   bridge discovery now finds the published **@atelierai/uco** npm package
   (plus legacy `uco`/`cocli` layouts as fallbacks).
 - Help text and skill templates say "uco bridge server" instead of
-  "Unity-MCP server"; the uco-setup recovery skill now documents how to
+  the legacy server name; the uco-setup recovery skill now documents how to
   bring the bridge up (`uco open --start-server true`, plugin auto-start,
   manual spawn with the exact CLI arguments).
 
@@ -90,7 +100,7 @@
 - Product naming unified to **Unity Copilot** (no hyphen) across docs and
   skill templates.
 - Vendored plugin refreshed to **1.0.2**: one menu tree (Tools ▸ Unity
-  Copilot), the "AI Game Developer" leftovers and the dead MCP Inspector
+  Copilot), the "AI Game Developer" leftovers and the dead legacy inspector
   item removed.
 - `uco init` interactive agent selection now renders a checkbox list
   (space toggles, arrows move, enter confirms) on a TTY; non-TTY keeps the
