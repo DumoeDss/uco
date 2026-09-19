@@ -1,6 +1,6 @@
 {
   "name": "@atelierai/uco",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "uco — Unity Copilot CLI. Drive Unity Editor (and runtime game builds) from any AI agent via plain HTTP.",
   "type": "module",
   "bin": {

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.10 - 2026-09-19
+
+- Vendored plugin refreshed to **1.0.8** — fixes an editor-native crash on
+  domain reload (UmaViewer issue uco-domain-reload-crash-20260919, 2/2
+  reproducible during script recompile). The plugin no longer defines a
+  finalizer: the historical one ran the full teardown (token cancellation
+  with synchronous Task continuations and ExecutionContext restores) on the
+  GC finalizer thread during domain unload, which mono cannot execute.
+  Assembly-reload/unload/quit cleanup now disposes the plugin instance
+  deterministically on the safe background-thread path. Ten other
+  same-pattern finalizers (request DTOs, log storage/collector) removed with
+  it. Framework tests 831x2; 2022.3 gate unchanged.
+
+
 ## 1.0.9 - 2026-09-19
 
 - Vendored plugin refreshed to **1.0.7**: the complete legacy-naming sweep —
