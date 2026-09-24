@@ -14,6 +14,7 @@ import { registerInit } from './commands/init.js';
 import { registerUpdate } from './commands/update.js';
 import { registerPrompt } from './commands/prompt.js';
 import { registerResource } from './commands/resource.js';
+import { registerEvidence } from './commands/evidence.js';
 import { registerGeneratedTools } from './generated/tools.js';
 import { MAX_TIMER_MILLISECONDS } from './util/timeout.js';
 import { getUcoVersion } from './skills/install-manifest.js';
@@ -40,6 +41,9 @@ export function buildProgram(): Command {
     .option('-t, --token <token>', 'Override bearer auth token. Wins over config.')
     .option('-j, --json', 'Output raw JSON to stdout (default: pretty for humans, JSON for objects)')
     .option('-v, --verbose', 'Print verbose diagnostics to stderr')
+    .option('--result-view <view>', 'Result delivery: full (default), ref, compact, auto')
+    .option('--evidence-file <path>', 'Save complete redacted JSON evidence without overwriting an existing file')
+    .option('--evidence-dir <path>', 'Directory for automatically named evidence files (must already exist)')
     .option('--timeout-ms <ms>', `Per-request timeout in milliseconds (canonical; default: 60000; range: 1-${MAX_TIMER_MILLISECONDS}; deprecated alias: --timeout)`)
     .option('--timeout <ms>', `Deprecated alias for --timeout-ms; milliseconds; default: 60000; range: 1-${MAX_TIMER_MILLISECONDS}`, '60000');
 
@@ -64,6 +68,7 @@ export function buildProgram(): Command {
   registerUpdate(program);
   registerPrompt(program);
   registerResource(program);
+  registerEvidence(program);
 
   // Dev-ops command suite (install-plugin, open, configure, status, etc.) —
   // vendored from upstream bridge/cli (Apache-2.0).
@@ -97,6 +102,9 @@ const PASSTHROUGH_OPTIONS: readonly PassthroughOptionSpec[] = [
   { short: '-t', long: '--token', arg: '<token>', description: 'Override bearer auth token (root global).' },
   { long: '--json', arg: '', description: 'Output raw JSON to stdout (root global).' },
   { long: '--verbose', arg: '', description: 'Print verbose diagnostics to stderr (root global).' },
+  { long: '--result-view', arg: '<view>', description: 'Result delivery: full, ref, compact, auto (root global).' },
+  { long: '--evidence-file', arg: '<path>', description: 'Save complete redacted JSON evidence (root global).' },
+  { long: '--evidence-dir', arg: '<path>', description: 'Directory for automatically named evidence files (root global).' },
   { long: '--timeout-ms', arg: '<ms>', description: 'Per-request timeout in milliseconds (root global).' },
   { long: '--timeout', arg: '<ms>', description: 'Deprecated alias for --timeout-ms (root global).' },
 ];

@@ -966,9 +966,8 @@ export interface LiveRuntimeRefreshResult {
  * produced by `uco setup-skills`, marked by `catalog/project.json`) from the
  * current templates while leaving the live catalog content in place — the
  * live-catalog non-regression rule. Only files the runtime's own ownership
- * manifest lists as managed are touched; anything else is warned about and
- * skipped. A runtime without a live catalog is not handled here (the static
- * republish path covers it).
+ * manifest lists as managed are refreshed. A runtime without a live catalog
+ * is not handled here (the static republish path covers it).
  */
 export function refreshLiveAgentRuntimeScripts(options: {
   projectPath: string;
@@ -978,6 +977,9 @@ export function refreshLiveAgentRuntimeScripts(options: {
   const runtime = path.resolve(options.projectPath, SUPPORT_RELATIVE_PATH);
   const manifestPath = path.join(runtime, RUNTIME_MANIFEST_PATH);
   if (!fs.existsSync(manifestPath)) {
+    return { status: 'unchanged', written: [], warnings: [] };
+  }
+  if (!fs.existsSync(path.join(runtime, 'catalog', 'project.json'))) {
     return { status: 'unchanged', written: [], warnings: [] };
   }
   let ownership: Record<string, unknown>;
@@ -990,7 +992,8 @@ export function refreshLiveAgentRuntimeScripts(options: {
       warnings: [`Runtime ownership manifest is unparseable; scripts left untouched: ${manifestPath}`],
     };
   }
-  if (!validManagedFiles(ownership.managedFiles)) {
+  if (!isOwnedBundleId(ownership.bundleId) || ownership.bundleVersion !== BUNDLE_VERSION
+    || !validManagedFiles(ownership.managedFiles)) {
     return {
       status: 'unchanged',
       written: [],
@@ -1000,10 +1003,24 @@ export function refreshLiveAgentRuntimeScripts(options: {
   const managed = new Set(ownership.managedFiles as string[]);
 
   const written: string[] = [];
+  const warnings: string[] = [];
+  const scriptsPath = path.join(runtime, 'scripts');
+  const scriptsInfo = fs.lstatSync(scriptsPath, { throwIfNoEntry: false });
+  const resolvedRelative = path.relative(fs.realpathSync(options.projectPath), fs.realpathSync(runtime));
+  if (fs.lstatSync(runtime).isSymbolicLink() || fs.lstatSync(manifestPath).isSymbolicLink()
+    || resolvedRelative.startsWith('..') || path.isAbsolute(resolvedRelative)
+    || (scriptsInfo && (!scriptsInfo.isDirectory() || scriptsInfo.isSymbolicLink()))) {
+    return { status: 'unchanged', written: [], warnings: ['Runtime script refresh refused: linked or non-directory paths.'] };
+  }
   for (const relativePath of LIVE_RUNTIME_SCRIPTS) {
-    if (!managed.has(relativePath)) continue;
     const installedPath = path.join(runtime, relativePath);
     assertDescendant(runtime, installedPath);
+    const installedInfo = fs.lstatSync(installedPath, { throwIfNoEntry: false });
+    if (!managed.has(relativePath)) continue;
+    if (installedInfo && !installedInfo.isFile()) {
+      warnings.push(`Non-regular runtime script preserved: ${relativePath}`);
+      continue;
+    }
     const content = readTemplate('unity-editor', relativePath);
     const needsWrite = options.force === true
       || !fs.existsSync(installedPath)
@@ -1017,11 +1034,10 @@ export function refreshLiveAgentRuntimeScripts(options: {
       assertStrictUtf8(installedPath);
     }
   }
-
   const status: LiveRuntimeRefreshResult['status'] = options.dryRun === true
     ? (written.length > 0 ? 'would-change' : 'unchanged')
     : (written.length > 0 ? 'updated' : 'unchanged');
-  return { status, written, warnings: [] };
+  return { status, written, warnings };
 }
 
 function assertDescendant(parent: string, candidate: string): void {

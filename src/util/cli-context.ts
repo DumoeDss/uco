@@ -12,6 +12,8 @@ import { MAX_TIMER_MILLISECONDS, parseBoundedInteger } from './timeout.js';
 import { ToolCallControlError } from '../tool-call-control.js';
 import { waitForEditorIdle } from './idle-wait.js';
 import { inspectInitialOperationState, waitForDurableOperation } from './operation-wait.js';
+import { deliverResult, validateResultDelivery } from './result-delivery.js';
+import { redactSensitiveValue } from './redaction.js';
 
 export interface GlobalOptions {
   project?: string;
@@ -25,6 +27,9 @@ export interface GlobalOptions {
   idleTimeoutMs?: string;
   wait?: boolean;
   waitTimeoutMs?: string;
+  resultView?: string;
+  evidenceFile?: string;
+  evidenceDir?: string;
 }
 
 export interface CommandContext {
@@ -37,6 +42,10 @@ export interface CommandContext {
 export interface CommandContextOverrides {
   /** Command-local positional project. When defined, it wins over root --project. */
   project?: string;
+  /** Actual bridge tool name when the command name is only `call`. */
+  resultToolName?: string;
+  /** Only generated commands with a catalog readOnlyHint opt in to auto delivery. */
+  autoReadOnly?: boolean;
 }
 
 export function buildContext(opts: GlobalOptions): CommandContext {
@@ -82,6 +91,8 @@ export function runCommand<TArgs extends unknown[]>(
     }
     let ctx: CommandContext;
     try {
+      validateResultDelivery({ view: opts.resultView, evidenceFile: opts.evidenceFile,
+        evidenceDir: opts.evidenceDir, toolName: contextOverrides?.resultToolName ?? cmd.name() });
       ctx = buildContext(opts);
     } catch (err) {
       printError({ json: Boolean(opts.json), verbose: Boolean(opts.verbose) }, err);
@@ -174,7 +185,16 @@ export function runCommand<TArgs extends unknown[]>(
         });
       }
       if (result !== undefined) {
-        printResult(ctx.output, result);
+        const delivered = deliverResult(result, { view: opts.resultView, evidenceFile: opts.evidenceFile,
+          evidenceDir: opts.evidenceDir, toolName: contextOverrides?.resultToolName ?? cmd.name(),
+          autoReadOnly: contextOverrides?.autoReadOnly });
+        printResult(ctx.output, delivered.value, { minifiedJson: delivered.view !== 'full' });
+        if (delivered.warning) {
+          const warning = redactSensitiveValue(delivered.warning);
+          process.stderr.write(ctx.output.json
+            ? JSON.stringify({ warning }) + '\n'
+            : `Warning: evidence-write-failed; operationExecuted=true; ${(warning as { message: string }).message}\n`);
+        }
       }
     } catch (err) {
       printError(ctx.output, err);

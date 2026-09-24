@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.11 - 2026-09-24
+
+- Add compact, reference, and automatic result views for large read-only Unity
+  responses. Full redacted evidence is saved without overwriting prior files;
+  `uco evidence show` verifies its SHA-256 before local inspection. The installed
+  project wrapper uses automatic views, while the raw CLI keeps full output by
+  default. Mutations, screenshots, and small results stay full.
+- Keep LogJev outside the installed Skill, runtime bundle, and npm package.
+  Controlled native-Agent comparisons found no net speed or main-Agent token
+  gain over the same deterministic prefilter. No plugin update is included;
+  the vendored plugin remains 1.0.8.
+
 ## 1.0.10 - 2026-09-19
 
 - Vendored plugin refreshed to **1.0.8** — fixes an editor-native crash on
@@ -155,4 +167,3 @@ a Node bridge server plus this CLI. Ships together with the
 - Lifecycle wrappers over the official Unity CLI: editors, install-unity,
   create-project, build, test — plus `open`/`close`/`wait-for-ready`
   editor orchestration
-

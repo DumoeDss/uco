@@ -36,6 +36,21 @@ node .uco/agent-runtime/scripts/tool-info.mjs <exact-tool-name>
 
 Never load `.uco/agent-runtime/catalog/tools.json` wholesale.
 
+The installed project wrapper defaults to `--result-view auto`: small returns,
+mutations and screenshots remain full; large typed read-only returns may carry
+a compact/ref view and a complete redacted evidence file in the OS temporary
+directory. Inspect `resultView` to see what was selected. Use
+`--result-view full` when the complete output is needed immediately, or
+`--evidence-dir <existing-directory>` to keep auto evidence in a chosen place.
+For explicit control, use `--result-view ref --evidence-file <new-path>`;
+`scene-get-data`, `console-get-logs`, and `batch-execute` also accept explicit
+`--result-view compact`. Retrieve missing facts with
+`uco evidence show <path> --sha256 <hash> --pointer <json-pointer>`;
+do not re-call a mutating Unity tool merely to recover output. Use a new file
+path per call; UCO will not overwrite prior evidence. Default full output is
+unchanged in the raw CLI. These views reduce output volume, not the need to
+verify task-specific claims or handle tool failures.
+
 ## Runtime reference map
 
 - [Scenes, GameObjects, components, assets, and prefabs](references/authoring.md)

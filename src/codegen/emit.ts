@@ -98,7 +98,9 @@ function emitOne(tool: ToolCatalogEntry): string {
     }
   }
   lines.push(`        return ctx.transport.callTool(${JSON.stringify(tool.name)}, args, toolCallOptionsFromCli(opts));`);
-  lines.push(`      })();`);
+  lines.push(tool.readOnlyHint === true
+    ? `      }, { autoReadOnly: true })();`
+    : `      })();`);
   lines.push(`    });`);
   lines.push(`  }`);
   return lines.join('\n');

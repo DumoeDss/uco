@@ -12,9 +12,9 @@ export interface OutputContext {
   verbose: boolean;
 }
 
-export function printResult(ctx: OutputContext, data: unknown): void {
+export function printResult(ctx: OutputContext, data: unknown, options?: { minifiedJson?: boolean }): void {
   if (ctx.json) {
-    process.stdout.write(JSON.stringify(redactSensitiveValue(data), null, 2) + '\n');
+    process.stdout.write(JSON.stringify(redactSensitiveValue(data), null, options?.minifiedJson ? undefined : 2) + '\n');
     return;
   }
   printPretty(data);

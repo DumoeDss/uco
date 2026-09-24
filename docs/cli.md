@@ -20,6 +20,65 @@ transport failure, confirmation-required, tool-reported failure, and help
 output all assert one-or-zero stdout documents and one-or-zero stderr error
 objects.
 
+## Result views and local evidence
+
+Tool commands accept `--result-view full|ref|compact|auto`,
+`--evidence-file <path>`, and `--evidence-dir <existing-directory>`.
+`full` is the default and keeps the existing output unchanged. Adding an
+evidence file to `full` saves the same **redacted** full JSON result while
+retaining full stdout. `ref` saves the redacted full result and prints a small
+reference with tool name, result shape, identity fields, absolute path, SHA-256,
+and byte count. `compact` adds a deterministic task-neutral summary. Both
+`ref` and `compact` require an evidence file or directory; existing files are
+never replaced. A directory yields a unique, automatically named file.
+In `--json` mode these two reduced views are minified; default `full` formatting
+is unchanged.
+
+`auto` chooses after receiving a successful result. It leaves small results
+unchanged and writes **no** evidence by default. For generated commands marked
+read-only in the tool catalog, it considers `compact` at 8 KiB and `ref` at
+32 KiB; `compact` must also save at least 2 KiB and 25% after estimated
+reference overhead. Mutating/unknown commands and inline image/screenshot
+results stay full. These are conservative starting thresholds, not proven
+token-optimal values. If selected, evidence gets a unique filename in the
+system temporary directory unless `--evidence-dir` is supplied. Evidence in
+temporary storage may persist until the OS or user cleans it; keep its path/hash
+for as long as recovery matters. `--evidence-file` explicitly requests a
+particular file even if `auto` keeps the stdout view full. Never combine the
+file and directory flags.
+
+The installed project Agent wrapper adds `--result-view auto` by default;
+the raw `uco` CLI stays on `full` for compatibility. Pass
+`--result-view full` to the wrapper to opt out for one call. Existing installed
+wrappers need `uco update` to receive this behavior; a live bundle created by
+`uco setup-skills` without an agent entry in the install manifest needs
+`uco setup-skills` run again instead.
+
+```bash
+uco scene-get-data --result-view compact --evidence-file ./scene-evidence.json --json
+uco scene-get-data --result-view auto --json
+uco evidence show ./scene-evidence.json --sha256 <digest> --pointer /structured/result/RootGameObjects/0/Hierarchy
+uco evidence show ./scene-evidence.json --sha256 <digest> --pointer /structured/result/RootGameObjects --offset 0 --limit 20
+```
+
+`ref` works for any command returning JSON. The first `compact` views cover
+`scene-get-data` (bounded hierarchy paths and active flags), `console-get-logs`
+(bounded indexed messages plus dropped/truncated counts), and `batch-execute`
+(per-child outcomes, with failures prioritized and omitted-failure accounting).
+Unsupported `compact` requests fail **before** calling Unity; use `ref` for
+those tools. These summaries never answer a task-specific semantic question:
+inspect the evidence when a field was omitted or the summary is insufficient.
+
+`evidence show` is local and needs no Editor connection. It verifies SHA-256
+before strict UTF-8/JSON parsing, then applies an RFC 6901 JSON Pointer. Arrays
+are paged by default (50 items, maximum page size 500); non-array selections
+over 32 KiB require a narrower pointer or explicit `--all`. The returned
+`value` is still redacted. Keep evidence files private: redaction removes known
+credentials, not arbitrary sensitive project data. If evidence writing fails
+*after* a successful Unity call, uco prints the complete redacted result and an
+`evidence-write-failed` warning with `operationExecuted=true`; do not blindly
+retry a mutating command to create the missing evidence.
+
 ## Canonical error envelope
 
 Every JSON-mode failure is:

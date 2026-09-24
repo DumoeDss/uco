@@ -78,7 +78,7 @@ Examples:
           ? await ctx.transport.callSystemTool(tool, args, control)
           : await ctx.transport.callTool(tool, args, control);
         return result;
-      })();
+      }, { resultToolName: tool })();
     });
   addToolCallControlOptions(command);
 

@@ -17,7 +17,7 @@ if (!fs.existsSync(config.ucoEntryPath)) {
 }
 const result = spawnSync(
   process.execPath,
-  [config.ucoEntryPath, '--project', config.projectPath, ...process.argv.slice(2)],
+  [config.ucoEntryPath, '--project', config.projectPath, '--result-view', 'auto', ...process.argv.slice(2)],
   { cwd: config.projectPath, stdio: 'inherit', windowsHide: true },
 );
 if (result.error) {

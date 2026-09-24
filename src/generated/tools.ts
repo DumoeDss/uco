@@ -290,7 +290,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["maxResults"] !== undefined) args["maxResults"] = opts["maxResults"];
         if (opts["searchInFolders"] !== undefined) args["searchInFolders"] = opts["searchInFolders"];
         return ctx.transport.callTool("assets-find", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Assets / Find (Built-in)
@@ -310,7 +310,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["name"] !== undefined) args["name"] = opts["name"];
         if (opts["type"] !== undefined) args["type"] = opts["type"];
         return ctx.transport.callTool("assets-find-built-in", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Assets / Get Data
@@ -330,7 +330,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("assets-get-data", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Assets / Create Material
@@ -528,7 +528,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("assets-shader-get-data", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Assets / List Shaders
@@ -544,7 +544,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("assets-shader-list-all", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Batch Execute
@@ -598,7 +598,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["jobId"] !== undefined) args["jobId"] = opts["jobId"];
         return ctx.transport.callTool("build-job-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Build / List Jobs
@@ -614,7 +614,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeCompleted"] !== undefined) args["includeCompleted"] = opts["includeCompleted"];
         return ctx.transport.callTool("build-job-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Build / Player
@@ -672,7 +672,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeDisabled"] !== undefined) args["includeDisabled"] = opts["includeDisabled"];
         return ctx.transport.callTool("build-scene-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Build / Remove Scene
@@ -818,7 +818,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["cameraRef"] !== undefined) args["cameraRef"] = opts["cameraRef"];
         return ctx.transport.callTool("camera-get-data", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Camera / List All
@@ -834,7 +834,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("camera-list-all", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Console / Clear Logs
@@ -880,7 +880,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["sinceUnixMs"] !== undefined) args["sinceUnixMs"] = opts["sinceUnixMs"];
         if (opts["source"] !== undefined) args["source"] = opts["source"];
         return ctx.transport.callTool("console-get-logs", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Docs / Get Manual
@@ -898,7 +898,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["slug"] !== undefined) args["slug"] = opts["slug"];
         if (opts["version"] !== undefined) args["version"] = opts["version"];
         return ctx.transport.callTool("docs-get-manual", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Docs / Get Package
@@ -918,7 +918,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["page"] !== undefined) args["page"] = opts["page"];
         if (opts["pkgVersion"] !== undefined) args["pkgVersion"] = opts["pkgVersion"];
         return ctx.transport.callTool("docs-get-package", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Docs / Get ScriptReference
@@ -938,7 +938,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["memberName"] !== undefined) args["memberName"] = opts["memberName"];
         if (opts["version"] !== undefined) args["version"] = opts["version"];
         return ctx.transport.callTool("docs-get-script-reference", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Docs / Lookup
@@ -960,7 +960,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["queries"] !== undefined) args["queries"] = opts["queries"];
         if (opts["version"] !== undefined) args["version"] = opts["version"];
         return ctx.transport.callTool("docs-lookup", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Editor / Application / Get State
@@ -976,7 +976,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("editor-application-get-state", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Editor / Application / Set State
@@ -1042,7 +1042,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["operationId"] !== undefined) args["operationId"] = opts["operationId"];
         return ctx.transport.callTool("editor-operation-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Editor Operation / List
@@ -1062,7 +1062,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["kind"] !== undefined) args["kind"] = opts["kind"];
         if (opts["limit"] !== undefined) args["limit"] = opts["limit"];
         return ctx.transport.callTool("editor-operation-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Editor / Selection / Get
@@ -1088,7 +1088,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["includeInstanceIDs"] !== undefined) args["includeInstanceIDs"] = opts["includeInstanceIDs"];
         if (opts["includeTransforms"] !== undefined) args["includeTransforms"] = opts["includeTransforms"];
         return ctx.transport.callTool("editor-selection-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Editor / Selection / Set
@@ -1154,7 +1154,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["cursor"] !== undefined) args["cursor"] = opts["cursor"];
         if (opts["pageSize"] !== undefined) args["pageSize"] = opts["pageSize"];
         return ctx.transport.callTool("frame-debugger-get-events", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // GameObject / Component / Add
@@ -1218,7 +1218,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("gameobject-component-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // GameObject / Component / List All
@@ -1238,7 +1238,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["pageSize"] !== undefined) args["pageSize"] = opts["pageSize"];
         if (opts["search"] !== undefined) args["search"] = opts["search"];
         return ctx.transport.callTool("gameobject-component-list-all", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // GameObject / Component / Modify
@@ -1352,7 +1352,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("gameobject-find", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // GameObject / Modify
@@ -1460,7 +1460,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeDiskSize"] !== undefined) args["includeDiskSize"] = opts["includeDiskSize"];
         return ctx.transport.callTool("graphics-lightbake-status", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Graphics / Rendering Stats
@@ -1476,7 +1476,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeMemoryStats"] !== undefined) args["includeMemoryStats"] = opts["includeMemoryStats"];
         return ctx.transport.callTool("graphics-rendering-stats", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Graphics / URP Asset / Get
@@ -1492,7 +1492,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["assetPath"] !== undefined) args["assetPath"] = opts["assetPath"];
         return ctx.transport.callTool("graphics-urp-asset-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Graphics / URP Asset / Set
@@ -1580,7 +1580,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["rendererDataPath"] !== undefined) args["rendererDataPath"] = opts["rendererDataPath"];
         return ctx.transport.callTool("graphics-urp-renderer-feature-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Graphics / URP Renderer Feature / Remove
@@ -1666,7 +1666,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["onlyWithProfile"] !== undefined) args["onlyWithProfile"] = opts["onlyWithProfile"];
         if (opts["sceneGlob"] !== undefined) args["sceneGlob"] = opts["sceneGlob"];
         return ctx.transport.callTool("graphics-volume-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Graphics / Volume / Remove Override
@@ -1724,7 +1724,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeEnvironment"] !== undefined) args["includeEnvironment"] = opts["includeEnvironment"];
         return ctx.transport.callTool("instance-get-current", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Instance / List All
@@ -1740,7 +1740,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeStale"] !== undefined) args["includeStale"] = opts["includeStale"];
         return ctx.transport.callTool("instance-list-all", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Object / Get Data
@@ -1760,7 +1760,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("object-get-data", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Object / Modify
@@ -1818,7 +1818,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["nameFilter"] !== undefined) args["nameFilter"] = opts["nameFilter"];
         if (opts["sourceFilter"] !== undefined) args["sourceFilter"] = opts["sourceFilter"];
         return ctx.transport.callTool("package-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Package Manager / Remove
@@ -1854,7 +1854,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["offlineMode"] !== undefined) args["offlineMode"] = opts["offlineMode"];
         if (opts["query"] !== undefined) args["query"] = opts["query"];
         return ctx.transport.callTool("package-search", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Collision Matrix / Get
@@ -1870,7 +1870,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["dimension"] !== undefined) args["dimension"] = opts["dimension"];
         return ctx.transport.callTool("physics-collision-matrix-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Collision Matrix / Set
@@ -2082,7 +2082,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["layerMask"] !== undefined) args["layerMask"] = opts["layerMask"];
         if (opts["to"] !== undefined) args["to"] = opts["to"];
         return ctx.transport.callTool("physics-linecast", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Material / Assign
@@ -2190,7 +2190,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["rotation"] !== undefined) args["rotation"] = opts["rotation"];
         if (opts["shape"] !== undefined) args["shape"] = opts["shape"];
         return ctx.transport.callTool("physics-overlap", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Raycast
@@ -2216,7 +2216,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["origin"] !== undefined) args["origin"] = opts["origin"];
         if (opts["queryTriggerInteraction"] !== undefined) args["queryTriggerInteraction"] = opts["queryTriggerInteraction"];
         return ctx.transport.callTool("physics-raycast", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Raycast / All
@@ -2242,7 +2242,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["origin"] !== undefined) args["origin"] = opts["origin"];
         if (opts["queryTriggerInteraction"] !== undefined) args["queryTriggerInteraction"] = opts["queryTriggerInteraction"];
         return ctx.transport.callTool("physics-raycast-all", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Rigidbody / Configure
@@ -2300,7 +2300,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["dimension"] !== undefined) args["dimension"] = opts["dimension"];
         if (opts["target"] !== undefined) args["target"] = opts["target"];
         return ctx.transport.callTool("physics-rigidbody-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Settings / Get
@@ -2316,7 +2316,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["dimension"] !== undefined) args["dimension"] = opts["dimension"];
         return ctx.transport.callTool("physics-settings-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Settings / Set
@@ -2392,7 +2392,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["rotation"] !== undefined) args["rotation"] = opts["rotation"];
         if (opts["shape"] !== undefined) args["shape"] = opts["shape"];
         return ctx.transport.callTool("physics-shapecast", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Physics / Simulate / Step
@@ -2426,7 +2426,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeInfo"] !== undefined) args["includeInfo"] = opts["includeInfo"];
         return ctx.transport.callTool("physics-validate", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Get Counters
@@ -2444,7 +2444,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["category"] !== undefined) args["category"] = opts["category"];
         if (opts["counters"] !== undefined) args["counters"] = opts["counters"];
         return ctx.transport.callTool("profiler-get-counters", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Get Frame Timing
@@ -2460,7 +2460,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("profiler-get-frame-timing", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Get Object Memory
@@ -2476,7 +2476,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["objectPath"] !== undefined) args["objectPath"] = opts["objectPath"];
         return ctx.transport.callTool("profiler-get-object-memory", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Memory Snapshot / Compare
@@ -2494,7 +2494,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["snapshotA"] !== undefined) args["snapshotA"] = opts["snapshotA"];
         if (opts["snapshotB"] !== undefined) args["snapshotB"] = opts["snapshotB"];
         return ctx.transport.callTool("profiler-memory-snapshot-compare", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Memory Snapshot / List
@@ -2510,7 +2510,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["searchPath"] !== undefined) args["searchPath"] = opts["searchPath"];
         return ctx.transport.callTool("profiler-memory-snapshot-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Memory Snapshot / Take
@@ -2576,7 +2576,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("profiler-status", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Profiler / Stop
@@ -2646,7 +2646,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["parametersMatchLevel"] !== undefined) args["parametersMatchLevel"] = opts["parametersMatchLevel"];
         if (opts["typeNameMatchLevel"] !== undefined) args["typeNameMatchLevel"] = opts["typeNameMatchLevel"];
         return ctx.transport.callTool("reflection-method-find", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Scene / Create
@@ -2694,7 +2694,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["paths"] !== undefined) args["paths"] = opts["paths"];
         if (opts["viewQuery"] !== undefined) args["viewQuery"] = opts["viewQuery"];
         return ctx.transport.callTool("scene-get-data", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Scene / List Opened
@@ -2710,7 +2710,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["nothing"] !== undefined) args["nothing"] = opts["nothing"];
         return ctx.transport.callTool("scene-list-opened", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Scene / Open
@@ -2804,7 +2804,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["outputFile"] !== undefined) args["outputFile"] = opts["outputFile"];
         if (opts["width"] !== undefined) args["width"] = opts["width"];
         return ctx.transport.callTool("screenshot-camera", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Screenshot / Game View
@@ -2824,7 +2824,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["metadataOnly"] !== undefined) args["metadataOnly"] = opts["metadataOnly"];
         if (opts["outputFile"] !== undefined) args["outputFile"] = opts["outputFile"];
         return ctx.transport.callTool("screenshot-game-view", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Screenshot / Isolated GameObject
@@ -2868,7 +2868,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["padding"] !== undefined) args["padding"] = opts["padding"];
         if (opts["resolution"] !== undefined) args["resolution"] = opts["resolution"];
         return ctx.transport.callTool("screenshot-isolated", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Screenshot / Scene View
@@ -2892,7 +2892,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["outputFile"] !== undefined) args["outputFile"] = opts["outputFile"];
         if (opts["width"] !== undefined) args["width"] = opts["width"];
         return ctx.transport.callTool("screenshot-scene-view", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Script / Apply Edits
@@ -2991,7 +2991,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["plainText"] !== undefined) args["plainText"] = opts["plainText"];
         if (opts["root"] !== undefined) args["root"] = opts["root"];
         return ctx.transport.callTool("script-find-in-file", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Script / Get SHA
@@ -3007,7 +3007,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["filePath"] !== undefined) args["filePath"] = opts["filePath"];
         return ctx.transport.callTool("script-get-sha", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Script / Read
@@ -3027,7 +3027,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["lineFrom"] !== undefined) args["lineFrom"] = opts["lineFrom"];
         if (opts["lineTo"] !== undefined) args["lineTo"] = opts["lineTo"];
         return ctx.transport.callTool("script-read", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Script / Update or Create
@@ -3065,7 +3065,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["fileName"] !== undefined) args["fileName"] = opts["fileName"];
         if (opts["level"] !== undefined) args["level"] = opts["level"];
         return ctx.transport.callTool("script-validate", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tests / Cancel Job
@@ -3097,7 +3097,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["jobId"] !== undefined) args["jobId"] = opts["jobId"];
         return ctx.transport.callTool("tests-job-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tests / List Jobs
@@ -3113,7 +3113,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeTerminal"] !== undefined) args["includeTerminal"] = opts["includeTerminal"];
         return ctx.transport.callTool("tests-job-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tests / Run
@@ -3285,7 +3285,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["path"] !== undefined) args["path"] = opts["path"];
         return ctx.transport.callTool("texture-read", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tool / Set Enabled State
@@ -3319,7 +3319,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["includeTools"] !== undefined) args["includeTools"] = opts["includeTools"];
         return ctx.transport.callTool("tools-list-groups", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tools / Set Group Enabled
@@ -3361,7 +3361,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["typeName"] !== undefined) args["typeName"] = opts["typeName"];
         if (opts["writeIndented"] !== undefined) args["writeIndented"] = opts["writeIndented"];
         return ctx.transport.callTool("type-get-json-schema", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // UI / Document / Attach
@@ -3419,7 +3419,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["selector"] !== undefined) args["selector"] = opts["selector"];
         if (opts["target"] !== undefined) args["target"] = opts["target"];
         return ctx.transport.callTool("ui-element-query", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // UI / USS / Create
@@ -3479,7 +3479,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["path"] !== undefined) args["path"] = opts["path"];
         return ctx.transport.callTool("ui-uss-read", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // UI / UXML / Create
@@ -3541,7 +3541,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["path"] !== undefined) args["path"] = opts["path"];
         return ctx.transport.callTool("ui-uxml-read", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // Tool / List
@@ -3561,7 +3561,7 @@ export function registerGeneratedTools(program: Command): void {
         if (opts["includeInputs"] !== undefined) args["includeInputs"] = opts["includeInputs"];
         if (opts["regexSearch"] !== undefined) args["regexSearch"] = opts["regexSearch"];
         return ctx.transport.callTool("unity-tool-list", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // VFX / Graph / Configure
@@ -3667,7 +3667,7 @@ export function registerGeneratedTools(program: Command): void {
         const args: Record<string, unknown> = {};
         if (opts["target"] !== undefined) args["target"] = opts["target"];
         return ctx.transport.callTool("vfx-particle-get", args, toolCallOptionsFromCli(opts));
-      })();
+      }, { autoReadOnly: true })();
     });
   }
   // VFX / Trail / Configure

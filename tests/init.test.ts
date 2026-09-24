@@ -92,9 +92,10 @@ describe('uco init (installStaticSkillBundle)', () => {
       expect(listRelativeFiles(dest).sort()).toEqual([...managedFiles].sort());
     }
 
-    // unity-editor references: six tool domains + prompts.md + resources.md (static base).
+    // Six tool domains + prompts/resources.
     const editorRefs = fs.readdirSync(path.join(skillsRoot, 'unity-editor', 'references'));
     expect(editorRefs.length).toBe(8);
+    expect(editorRefs).not.toContain('logjev.md');
 
     expect(result.supportDestination).toBe(path.join(projectPath, '.uco', 'agent-runtime'));
     expect(JSON.parse(fs.readFileSync(
